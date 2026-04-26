@@ -112,6 +112,148 @@
       border-radius: 2px;
     }
 
+    /* New VVPAT Animation Styles */
+    .vvpat-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .vvpat-modal.show {
+      display: flex;
+    }
+
+    .vvpat-container {
+      width: 420px;
+      background: linear-gradient(to bottom, #17395c, #0f2c4a);
+      border-radius: 28px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+      position: relative;
+      border: 4px solid #0b2238;
+    }
+
+    .vvpat-container h2 {
+      margin-bottom: 15px;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .vvpat-screen {
+      background: url('public/vvpat.png') no-repeat center;
+      background-size: contain;
+      height: 500px;
+      width: 500px;
+      margin: 0 auto;
+      position: relative;
+      display: none;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 100px;
+    }
+
+    .vvpat-screen.show {
+      display: flex;
+    }
+
+    .vvpat-slip {
+      width: 160px;
+      background: white;
+      padding: 15px 10px;
+      position: absolute;
+      top: 110px;
+      transform: translateY(0);
+      opacity: 1;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .vvpat-slip.animate-down {
+      animation: printDown 3s ease-in-out forwards;
+    }
+
+    .vvpat-slip.animate-up {
+      animation: printUp 3s ease-in-out forwards;
+    }
+
+    @keyframes printDown {
+      0% {
+        transform: translateY(-250px);
+        opacity: 0;
+      }
+      30% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes printUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-150px);
+        opacity: 1;
+      }
+    }
+
+    .vvpat-symbol {
+      font-size: 40px;
+      margin: 10px 0;
+    }
+
+    .vvpat-close-note {
+      margin-top: 18px;
+      font-size: 16px;
+      color: #7CFC00;
+      font-weight: bold;
+    }
+
+    .slip-header {
+      text-align: center;
+      border-bottom: 1px dashed #000;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .slip-field {
+      margin-bottom: 8px;
+    }
+
+    .slip-symbol {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .slip-footer {
+      text-align: center;
+      border-top: 1px dashed #000;
+      padding-top: 8px;
+      margin-top: 12px;
+    }
+
+    .slip-symbol-inner {
+      font-size: 24px;
+    }
+
+    .serial-number {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
     .wire-curve {
       position: absolute;
       right: 50%;
@@ -202,13 +344,11 @@
             }
           </script>
 
-      <!-- Wire connecting to printer -->
-      <div class="wire"></div>
-
+      
     </div>
 
     <!-- Printer -->
-    <div class="printer mt-28 w-[480px] p-4 text-white relative">
+    <div class="printer mt-28 w-[480px] p-4 text-white relative hidden">
       <!-- Printer Body Top -->
       <div class="bg-gray-700 rounded-t-lg p-3 border-b-2 border-gray-800">
         <div class="flex items-center justify-between">
@@ -284,6 +424,7 @@
 
   <script>
     function handleVote(index) {
+      // Add blinking and clicked classes
       const redLight = document.getElementById(`red-light-${index}`);
       const voteBtn = document.getElementById(`vote-btn-${index}`);
       const shortName = document.getElementById(`short-name-${index}`);
@@ -311,23 +452,64 @@
         party = parties[index - 2] || { name: '', short: '', symbol: '', fullName: '', leader: '' };
       }
       
-      // Update VVPAT slip
-      document.getElementById('vvpat-serial').textContent = String(index).padStart(2, '0');
-      document.getElementById('vvpat-candidate').textContent = party.leader || 'CANDIDATE NAME';
-      document.getElementById('vvpat-party').textContent = party.short || 'PARTY NAME';
-      const symbolElement = document.getElementById('vvpat-symbol');
+      // New VVPAT Modal Animation
+      const modal = document.getElementById('vvpat-modal');
+      const slip = document.getElementById('vvpat-slip');
+      const vvpatScreen = document.querySelector('.vvpat-screen');
+      
+      // Show VVPAT modal
+      modal.classList.add('show');
+      vvpatScreen.classList.add('show');
+      
+      // Update modal content
+      document.getElementById('modal-serial').textContent = String(index).padStart(2, '0');
+      document.getElementById('modal-candidate').textContent = party.leader || 'CANDIDATE NAME';
+      document.getElementById('modal-party').textContent = party.short || 'PARTY NAME';
+      const modalSymbolElement = document.getElementById('modal-symbol');
       if (party.symbol && party.symbol.includes('.png')) {
-        symbolElement.innerHTML = `<img src="${party.symbol}" alt="${party.short}" class="h-20 w-20 object-contain">`;
+        modalSymbolElement.innerHTML = `<img src="${party.symbol}" alt="${party.short}" class="w-16 h-16 object-contain">`;
       } else {
-        symbolElement.textContent = party.symbol || '🖼️';
+        modalSymbolElement.textContent = party.symbol || '🏏';
       }
       
+            
+      // Step 1: Slip scroll down
+      slip.classList.remove('animate-up');
+      slip.classList.add('animate-down');
+      
+      // Step 2: After 3 sec slip moves up and fits center
       setTimeout(() => {
+        slip.classList.remove('animate-down');
+        slip.classList.add('animate-up');
+      }, 3000);
+      
+      // Step 3: Voice confirmation after slip animation
+      setTimeout(() => {
+        const msg = new SpeechSynthesisUtterance(
+          "Your vote has been successfully recorded"
+        );
+        speechSynthesis.speak(msg);
+      }, 4000);
+      
+      // Step 4: Reset lights and buttons after animation (keep modal open)
+      setTimeout(() => {
+        slip.classList.remove('animate-up');
         redLight.classList.remove('blink-green');
         voteBtn.classList.remove('clicked');
         shortName.classList.remove('short-name-blink');
-      }, 3000);
+      }, 7000);
     }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('vvpat-modal');
+      const vvpatScreen = document.querySelector('.vvpat-screen');
+      
+      if (event.target === modal) {
+        modal.classList.remove('show');
+        vvpatScreen.classList.remove('show');
+      }
+    });
 
     function togglePower() {
       const powerLight = document.getElementById('power-light');
@@ -358,6 +540,32 @@
       }, 200);
     }
   </script>
+
+<!-- Simple VVPAT Modal -->
+  <div id="vvpat-modal" class="vvpat-modal">
+    <div class="vvpat-screen">
+      <div id="vvpat-slip" class="vvpat-slip">
+        <div class="slip-header">
+          <strong>VVPAT SLIP</strong>
+        </div>
+        <div class="slip-field">
+          <strong>Serial No:</strong> <span id="modal-serial" class="serial-number">01</span>
+        </div>
+        <div class="slip-field">
+          <strong>Candidate:</strong> <span id="modal-candidate">Candidate Name</span>
+        </div>
+        <div class="slip-field">
+          <strong>Party:</strong> <span id="modal-party">PARTY</span>
+        </div>
+        <div class="slip-symbol">
+          <div id="modal-symbol" class="slip-symbol-inner">🏏</div>
+        </div>
+        <div class="slip-footer">
+          <strong>Vote Recorded</strong>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

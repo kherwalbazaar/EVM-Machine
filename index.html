@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EVM Ballot Unit with Thermal Printer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+    }
+
+    .evm-shell {
+      background: #dfe5ea;
+      border: 4px solid #b8c0c8;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .green-light {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00ff44;
+      box-shadow: 0 0 12px #00ff44;
+    }
+
+    .red-light {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #8b0000;
+      border: 1px solid #222;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .red-light.blink-green {
+      background: #00ff44;
+      box-shadow: 0 0 12px #00ff44;
+      animation: blink 0.5s ease-in-out infinite;
+    }
+
+    .short-name-blink {
+      background: #e6ffe6;
+      animation: blink 0.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .vote-btn {
+      width: 58px;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #0b5f9a 0%, #0b4f8a 100%);
+      border: 2px solid #08365d;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+
+    .vote-btn.clicked {
+      background: #0066cc;
+      border-color: #004499;
+      transform: scale(0.95);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .printer {
+      background: linear-gradient(180deg, #3d3d3d 0%, #2d2d2d 100%);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      border: 3px solid #1a1a1a;
+    }
+
+    .wire {
+      position: absolute;
+      right: 50%;
+      transform: translateX(50%);
+      top: 100%;
+      width: 8px;
+      height: 180px;
+      background: linear-gradient(90deg, #333 0%, #666 50%, #333 100%);
+      border-radius: 4px;
+      z-index: 10;
+    }
+
+    .wire::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 16px;
+      background: linear-gradient(180deg, #444 0%, #222 100%);
+      border-radius: 4px 4px 0 0;
+      border: 2px solid #111;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .wire::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 8px;
+      background: linear-gradient(180deg, #666 0%, #444 100%);
+      border-radius: 2px;
+    }
+
+    .wire-curve {
+      position: absolute;
+      right: 50%;
+      transform: translateX(50%);
+      top: calc(100% + 100px);
+      width: 80px;
+      height: 80px;
+      border: 8px solid transparent;
+      border-top-color: #333;
+      border-right-color: #666;
+      border-radius: 0 0 80px 0;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="min-h-screen flex flex-col items-center py-10 px-4">
+
+    <!-- EVM Machine -->
+    <div class="relative evm-shell w-full max-w-5xl p-6">
+
+      <!-- Header -->
+      <div class="bg-gray-200 rounded-2xl px-6 py-4 flex justify-between items-center mb-6 border border-gray-400">
+        <div class="flex items-center gap-3 text-2xl font-bold">
+          Ready
+          <div class="green-light"></div>
+        </div>
+        <div class="text-3xl font-bold">Ballot Unit</div>
+      </div>
+
+      <!-- Candidate List with Buttons -->
+          <div class="grid grid-cols-[70px_70px_1fr_80px_80px_160px] h-14 border-b-2 border-gray-300">
+            <div class="flex items-center justify-center font-bold text-xl border-l-2 border-r border-gray-400 bg-white rounded-tl-lg">1</div>
+            <div class="flex items-center justify-center border-l border-gray-300 bg-white">
+              <img src="public/narendra.png" alt="Narendra Modi" class="w-10 h-10 object-cover rounded-lg">
+            </div>
+            <div class="flex items-center px-4 font-semibold text-lg bg-white">Narendra Modi</div>
+            <div class="flex items-center justify-center border-l border-gray-300 bg-white text-sm font-medium" id="short-name-1">BJP</div>
+            <div class="flex items-center justify-center border-l border-gray-300 bg-white rounded-tr-lg">
+              <img src="public/bjp.png" alt="BJP" class="h-12 w-12 object-contain">
+            </div>
+            <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 rounded-t-lg shadow-sm">
+              <div class="red-light" id="red-light-1"></div>
+              <div class="vote-btn cursor-pointer" id="vote-btn-1" onclick="handleVote(1)"></div>
+            </div>
+          </div>
+
+          <!-- Remaining Rows -->
+          <script>
+            const parties = [
+              { name: 'Biju Janata Dal (BJD)', short: 'BJD', symbol: 'public/bjd.png', fullName: 'Biju Janata Dal', leader: 'Naveen Patnaik', candidateImage: 'public/naveen.png' },
+              { name: 'Indian National Congress (Congress)', short: 'INC', symbol: 'public/Congress.png', fullName: 'Indian National Congress', leader: 'Mallikarjun Kharge', candidateImage: 'public/khadge.png' },
+              { name: 'Aam Aadmi Party (AAP)', short: 'AAP', symbol: 'public/aap.png', fullName: 'Aam Aadmi Party', leader: 'Arvind Kejriwal', candidateImage: 'public/kejriwal.png' },
+              { name: 'Communist Party of India (Marxist)', short: 'CPM', symbol: 'public/CPI.png', fullName: 'Communist Party of India (Marxist)', leader: 'M. A. Baby', candidateImage: 'public/M. A. Baby.png' },
+              { name: 'Communist Party of India', short: 'CPI', symbol: 'public/CPI.png', fullName: 'Communist Party of India', leader: 'D. Raja', candidateImage: 'public/d raja.png' },
+              { name: 'Jharkhand Mukti Morcha', short: 'JMM', symbol: 'public/JMM.png', fullName: 'Jharkhand Mukti Morcha', leader: 'Hemant Soren', candidateImage: 'public/hemanta.png' },
+              { name: 'All India Trinamool Congress', short: 'TMC', symbol: 'public/TMC.png', fullName: 'All India Trinamool Congress', leader: 'Mamata Banerjee', candidateImage: 'public/mamata.png' },
+              { name: '', short: '', symbol: '', fullName: '', leader: '', candidateImage: '' },
+              { name: '', short: '', symbol: '', fullName: '', leader: '', candidateImage: '' }
+            ];
+
+            const bjpParty = { name: 'Bharatiya Janata Party (BJP)', short: 'BJP', symbol: 'public/bjp.png', fullName: 'Bharatiya Janata Party', leader: 'Narendra Modi', candidateImage: 'public/narendra.png' };
+            
+            for (let i = 2; i <= 10; i++) {
+              const isLast = i === 10;
+              const roundedClass = isLast ? 'rounded-b-lg' : '';
+              const numberRoundedClass = isLast ? 'rounded-bl-lg' : '';
+              const symbolRoundedClass = isLast ? 'rounded-br-lg' : 'rounded-tr-lg';
+              const party = parties[i - 2] || { name: '', short: '', leader: '', candidateImage: '' };
+              document.write(`
+                <div class="grid grid-cols-[70px_70px_1fr_80px_80px_160px] h-14 border-b-2 border-gray-300">
+                  <div class="flex items-center justify-center font-bold text-xl border-l-2 border-r border-gray-400 bg-white ${numberRoundedClass}">${i}</div>
+                  <div class="flex items-center justify-center border-l border-gray-300 bg-white">
+                    ${party.candidateImage ? `<img src="${party.candidateImage}" alt="${party.leader}" class="w-10 h-10 object-cover rounded-lg">` : '<div class="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-xs">IMG</div>'}
+                  </div>
+                  <div class="flex items-center px-4 font-semibold text-lg bg-white">${party.leader || party.name}</div>
+                  <div class="flex items-center justify-center border-l border-gray-300 bg-white text-sm font-medium" id="short-name-${i}">${party.short}</div>
+                  <div class="border-l border-gray-300 bg-white ${symbolRoundedClass} flex items-center justify-center">
+                    ${party.symbol ? `<img src="${party.symbol}" alt="${party.short}" class="h-12 w-12 object-contain">` : ''}
+                  </div>
+                  <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 ${roundedClass} shadow-sm">
+                    <div class="red-light" id="red-light-${i}"></div>
+                    <div class="vote-btn cursor-pointer" id="vote-btn-${i}" onclick="handleVote(${i})"></div>
+                  </div>
+                </div>
+              `)
+            }
+          </script>
+
+      <!-- Wire connecting to printer -->
+      <div class="wire"></div>
+
+    </div>
+
+    <!-- Printer -->
+    <div class="printer mt-28 w-[480px] p-4 text-white relative">
+      <!-- Printer Body Top -->
+      <div class="bg-gray-700 rounded-t-lg p-3 border-b-2 border-gray-800">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold tracking-wider">VVPAT</span>
+          <div class="flex gap-2">
+            <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+            <span class="text-xs">READY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paper Slot Area -->
+      <div class="bg-gray-900 p-4 relative">
+        <div class="bg-gray-800 rounded p-2">
+          <div class="bg-gray-700 h-2 rounded-full mb-2"></div>
+          <div class="bg-white text-black mx-auto shadow-lg border-2 border-gray-300" style="width: 380px; padding: 16px; border-top: 2px dashed #999; border-bottom: 2px dashed #999;">
+            <h1 class="text-xl font-bold text-center tracking-wide">VVPAT SLIP</h1>
+            <div class="border-t-2 border-dashed border-gray-400 my-3"></div>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between">
+                <span class="font-semibold">Date</span>
+                <span>: 25-05-2024</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-semibold">Time</span>
+                <span>: 10:42:15</span>
+              </div>
+            </div>
+            <div class="border-t-2 border-dashed border-gray-400 my-3"></div>
+            <div class="grid grid-cols-2 gap-4 items-start">
+              <div>
+                <p class="text-base font-semibold mb-1">Serial No.</p>
+                <p class="text-6xl font-bold mt-16 ml-8" id="vvpat-serial">01</p>
+              </div>
+              <div>
+                <p class="text-base font-semibold">Candidate Name</p>
+                <p class="text-xl font-bold mt-1" id="vvpat-candidate">JOHN DOE</p>
+                <p class="text-base font-semibold mt-3">Party</p>
+                <p class="text-lg font-bold mt-1" id="vvpat-party">XYZ PARTY</p>
+                <p class="text-base font-semibold mt-3 mb-1">Symbol</p>
+                <div class="w-20 h-20 border-2 border-gray-800 rounded flex items-center justify-center" id="vvpat-symbol">🌸</div>
+              </div>
+            </div>
+            <div class="border-t-2 border-dashed border-gray-400 my-3"></div>
+            <p class="text-center text-base font-bold tracking-wide">THANK YOU FOR VOTING</p>
+          </div>
+        </div>
+        
+        <!-- Paper Exit Slot -->
+        <div class="mt-3 bg-black h-6 rounded flex items-center justify-center">
+          <div class="w-40 h-1 bg-gray-600 rounded"></div>
+        </div>
+      </div>
+
+      <!-- Printer Controls -->
+      <div class="bg-gray-800 rounded-b-lg p-3 flex justify-between items-center border-t-2 border-gray-700">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="togglePower()">
+          <div class="w-3 h-3 rounded-full bg-green-400 shadow-lg shadow-green-400/50" id="power-light"></div>
+          <p class="text-xs font-medium">POWER</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded text-xs font-medium border border-gray-600 transition active:scale-95" onclick="feedPaper()">
+            FEED
+          </button>
+          <button class="bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded text-xs font-medium border border-gray-600 transition active:scale-95" onclick="cutPaper()">
+            CUT
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function handleVote(index) {
+      const redLight = document.getElementById(`red-light-${index}`);
+      const voteBtn = document.getElementById(`vote-btn-${index}`);
+      const shortName = document.getElementById(`short-name-${index}`);
+      
+      redLight.classList.add('blink-green');
+      voteBtn.classList.add('clicked');
+      shortName.classList.add('short-name-blink');
+      
+      // Get party data
+      let party;
+      if (index === 1) {
+        party = { name: 'Bharatiya Janata Party (BJP)', short: 'BJP', symbol: 'public/bjp.png', fullName: 'Bharatiya Janata Party', leader: 'Narendra Modi' };
+      } else {
+        const parties = [
+          { name: 'Biju Janata Dal (BJD)', short: 'BJD', symbol: 'public/bjd.png', fullName: 'Biju Janata Dal', leader: 'Naveen Patnaik' },
+          { name: 'Indian National Congress (Congress)', short: 'INC', symbol: 'public/Congress.png', fullName: 'Indian National Congress', leader: 'Mallikarjun Kharge' },
+          { name: 'Aam Aadmi Party (AAP)', short: 'AAP', symbol: 'public/aap.png', fullName: 'Aam Aadmi Party', leader: 'Arvind Kejriwal' },
+          { name: 'Communist Party of India (Marxist)', short: 'CPM', symbol: 'public/CPI.png', fullName: 'Communist Party of India (Marxist)', leader: 'M. A. Baby' },
+          { name: 'Communist Party of India', short: 'CPI', symbol: 'public/CPI.png', fullName: 'Communist Party of India', leader: 'D. Raja' },
+          { name: 'Jharkhand Mukti Morcha', short: 'JMM', symbol: 'public/JMM.png', fullName: 'Jharkhand Mukti Morcha', leader: 'Hemant Soren' },
+          { name: 'All India Trinamool Congress', short: 'TMC', symbol: 'public/TMC.png', fullName: 'All India Trinamool Congress', leader: 'Mamata Banerjee' },
+          { name: '', short: '', symbol: '', fullName: '', leader: '' },
+          { name: '', short: '', symbol: '', fullName: '', leader: '' }
+        ];
+        party = parties[index - 2] || { name: '', short: '', symbol: '', fullName: '', leader: '' };
+      }
+      
+      // Update VVPAT slip
+      document.getElementById('vvpat-serial').textContent = String(index).padStart(2, '0');
+      document.getElementById('vvpat-candidate').textContent = party.leader || 'CANDIDATE NAME';
+      document.getElementById('vvpat-party').textContent = party.short || 'PARTY NAME';
+      const symbolElement = document.getElementById('vvpat-symbol');
+      if (party.symbol && party.symbol.includes('.png')) {
+        symbolElement.innerHTML = `<img src="${party.symbol}" alt="${party.short}" class="h-20 w-20 object-contain">`;
+      } else {
+        symbolElement.textContent = party.symbol || '🖼️';
+      }
+      
+      setTimeout(() => {
+        redLight.classList.remove('blink-green');
+        voteBtn.classList.remove('clicked');
+        shortName.classList.remove('short-name-blink');
+      }, 3000);
+    }
+
+    function togglePower() {
+      const powerLight = document.getElementById('power-light');
+      if (powerLight.classList.contains('bg-green-400')) {
+        powerLight.classList.remove('bg-green-400', 'shadow-lg', 'shadow-green-400/50');
+        powerLight.classList.add('bg-red-500', 'shadow-lg', 'shadow-red-500/50');
+      } else {
+        powerLight.classList.remove('bg-red-500', 'shadow-lg', 'shadow-red-500/50');
+        powerLight.classList.add('bg-green-400', 'shadow-lg', 'shadow-green-400/50');
+      }
+    }
+
+    function feedPaper() {
+      const paperExit = document.querySelector('.bg-black.h-6');
+      paperExit.style.transition = 'background-color 0.3s';
+      paperExit.classList.add('bg-gray-800');
+      setTimeout(() => {
+        paperExit.classList.remove('bg-gray-800');
+      }, 500);
+    }
+
+    function cutPaper() {
+      const paperExit = document.querySelector('.bg-black.h-6');
+      paperExit.style.transition = 'transform 0.2s';
+      paperExit.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        paperExit.style.transform = 'scale(1)';
+      }, 200);
+    }
+  </script>
+
+</body>
+</html>

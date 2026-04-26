@@ -166,10 +166,10 @@
     .vvpat-slip {
       width: 160px;
       background: white;
-      padding: 15px 10px;
+      padding: 12px 10px;
       position: absolute;
       top: 110px;
-      transform: translateY(0);
+      transform: translateY(0); /* start from stop position */
       opacity: 1;
       font-family: 'Courier New', monospace;
       font-size: 10px;
@@ -177,36 +177,51 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
+    /* First: move downward */
     .vvpat-slip.animate-down {
-      animation: printDown 3s ease-in-out forwards;
+      animation: printDown 0.8s ease-in-out forwards;
     }
 
+    /* Then: move upward to original position */
     .vvpat-slip.animate-up {
       animation: printUp 3s ease-in-out forwards;
     }
 
     @keyframes printDown {
       0% {
-        transform: translateY(-250px);
-        opacity: 0;
+        transform: translateY(0); /* start from current position */
+        opacity: 0; /* blank at start */
+        filter: blur(0px);
       }
-      30% {
-        opacity: 1;
+
+      50% {
+        opacity: 0.3; /* slightly show at 50% */
+        filter: blur(2px);
       }
+
       100% {
-        transform: translateY(0);
-        opacity: 1;
+        transform: translateY(140px); /* move downward */
+        opacity: 0.5; /* still slightly blurry */
+        filter: blur(3px);
       }
     }
 
     @keyframes printUp {
       0% {
-        transform: translateY(0);
-        opacity: 1;
+        transform: translateY(140px); /* start from down position */
+        opacity: 0.5; /* slightly blurry */
+        filter: blur(3px);
       }
+
+      50% {
+        opacity: 0.8; /* becoming clearer */
+        filter: blur(1px);
+      }
+
       100% {
-        transform: translateY(-150px);
-        opacity: 1;
+        transform: translateY(0); /* return to original top position */
+        opacity: 1; /* completely clear */
+        filter: blur(0px);
       }
     }
 
@@ -233,20 +248,49 @@
       margin-bottom: 8px;
     }
 
+    .slip-serial {
+      text-align: center;
+      border-bottom: 1px dotted #000;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+    }
+
+    .slip-candidate-name {
+      text-align: center;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
+    .slip-candidate-image {
+      text-align: center;
+      margin: 8px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .slip-symbol {
       text-align: center;
       margin: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .slip-footer {
       text-align: center;
       border-top: 1px dashed #000;
       padding-top: 8px;
-      margin-top: 12px;
+      margin-top: 8px;
     }
 
     .slip-symbol-inner {
       font-size: 24px;
+    }
+
+    .slip-symbol-inner img {
+      width: 32px !important;
+      height: 32px !important;
     }
 
     .serial-number {
@@ -433,21 +477,26 @@
       voteBtn.classList.add('clicked');
       shortName.classList.add('short-name-blink');
       
+      // Stop blinking after 1 second
+      setTimeout(() => {
+        redLight.classList.remove('blink-green');
+      }, 1000);
+      
       // Get party data
       let party;
       if (index === 1) {
-        party = { name: 'Bharatiya Janata Party (BJP)', short: 'BJP', symbol: 'public/bjp.png', fullName: 'Bharatiya Janata Party', leader: 'Narendra Modi' };
+        party = { name: 'Bharatiya Janata Party (BJP)', short: 'BJP', symbol: 'public/bjp.png', fullName: 'Bharatiya Janata Party', leader: 'Narendra Modi', candidateImage: 'public/narendra.png' };
       } else {
         const parties = [
-          { name: 'Biju Janata Dal (BJD)', short: 'BJD', symbol: 'public/bjd.png', fullName: 'Biju Janata Dal', leader: 'Naveen Patnaik' },
-          { name: 'Indian National Congress (Congress)', short: 'INC', symbol: 'public/Congress.png', fullName: 'Indian National Congress', leader: 'Mallikarjun Kharge' },
-          { name: 'Aam Aadmi Party (AAP)', short: 'AAP', symbol: 'public/aap.png', fullName: 'Aam Aadmi Party', leader: 'Arvind Kejriwal' },
-          { name: 'Communist Party of India (Marxist)', short: 'CPM', symbol: 'public/CPI.png', fullName: 'Communist Party of India (Marxist)', leader: 'M. A. Baby' },
-          { name: 'Communist Party of India', short: 'CPI', symbol: 'public/CPI.png', fullName: 'Communist Party of India', leader: 'D. Raja' },
-          { name: 'Jharkhand Mukti Morcha', short: 'JMM', symbol: 'public/JMM.png', fullName: 'Jharkhand Mukti Morcha', leader: 'Hemant Soren' },
-          { name: 'All India Trinamool Congress', short: 'TMC', symbol: 'public/TMC.png', fullName: 'All India Trinamool Congress', leader: 'Mamata Banerjee' },
-          { name: '', short: '', symbol: '', fullName: '', leader: '' },
-          { name: '', short: '', symbol: '', fullName: '', leader: '' }
+          { name: 'Biju Janata Dal (BJD)', short: 'BJD', symbol: 'public/bjd.png', fullName: 'Biju Janata Dal', leader: 'Naveen Patnaik', candidateImage: 'public/naveen.png' },
+          { name: 'Indian National Congress (Congress)', short: 'INC', symbol: 'public/Congress.png', fullName: 'Indian National Congress', leader: 'Mallikarjun Kharge', candidateImage: 'public/khadge.png' },
+          { name: 'Aam Aadmi Party (AAP)', short: 'AAP', symbol: 'public/aap.png', fullName: 'Aam Aadmi Party', leader: 'Arvind Kejriwal', candidateImage: 'public/kejriwal.png' },
+          { name: 'Communist Party of India (Marxist)', short: 'CPM', symbol: 'public/CPI.png', fullName: 'Communist Party of India (Marxist)', leader: 'M. A. Baby', candidateImage: 'public/M. A. Baby.png' },
+          { name: 'Communist Party of India', short: 'CPI', symbol: 'public/CPI.png', fullName: 'Communist Party of India', leader: 'D. Raja', candidateImage: 'public/d raja.png' },
+          { name: 'Jharkhand Mukti Morcha', short: 'JMM', symbol: 'public/JMM.png', fullName: 'Jharkhand Mukti Morcha', leader: 'Hemant Soren', candidateImage: 'public/hemanta.png' },
+          { name: 'All India Trinamool Congress', short: 'TMC', symbol: 'public/TMC.png', fullName: 'All India Trinamool Congress', leader: 'Mamata Banerjee', candidateImage: 'public/mamata.png' },
+          { name: '', short: '', symbol: '', fullName: '', leader: '', candidateImage: '' },
+          { name: '', short: '', symbol: '', fullName: '', leader: '', candidateImage: '' }
         ];
         party = parties[index - 2] || { name: '', short: '', symbol: '', fullName: '', leader: '' };
       }
@@ -457,14 +506,39 @@
       const slip = document.getElementById('vvpat-slip');
       const vvpatScreen = document.querySelector('.vvpat-screen');
       
-      // Show VVPAT modal
-      modal.classList.add('show');
-      vvpatScreen.classList.add('show');
+      // Play beep audio file from public folder
+      const beepAudio = new Audio('public/dragon-studio-censor-beep-1-372459.mp3');
+      
+      // Show popup only after audio completely finishes
+      beepAudio.onended = function() {
+        // Wait for blink to stop (1 second) plus small delay
+        setTimeout(() => {
+          modal.classList.add('show');
+          vvpatScreen.classList.add('show');
+        }, 100);
+      };
+      
+      beepAudio.play().catch(error => {
+        console.error('Error playing beep audio:', error);
+        // If audio fails, show popup after 1 second as fallback
+        setTimeout(() => {
+          modal.classList.add('show');
+          vvpatScreen.classList.add('show');
+        }, 1000);
+      });
       
       // Update modal content
       document.getElementById('modal-serial').textContent = String(index).padStart(2, '0');
       document.getElementById('modal-candidate').textContent = party.leader || 'CANDIDATE NAME';
-      document.getElementById('modal-party').textContent = party.short || 'PARTY NAME';
+      
+      // Update candidate image
+      const candidateImageElement = document.getElementById('modal-candidate-image');
+      if (party.candidateImage) {
+        candidateImageElement.src = party.candidateImage;
+        candidateImageElement.alt = party.leader || 'Candidate';
+      }
+      
+      // Update party symbol
       const modalSymbolElement = document.getElementById('modal-symbol');
       if (party.symbol && party.symbol.includes('.png')) {
         modalSymbolElement.innerHTML = `<img src="${party.symbol}" alt="${party.short}" class="w-16 h-16 object-contain">`;
@@ -473,23 +547,51 @@
       }
       
             
-      // Step 1: Slip scroll down
-      slip.classList.remove('animate-up');
-      slip.classList.add('animate-down');
+      // Step 1: Slip scroll down (start after popup appears)
+      setTimeout(() => {
+        slip.classList.remove('animate-up');
+        slip.classList.add('animate-down');
+      }, 100);
       
-      // Step 2: After 3 sec slip moves up and fits center
+      // Step 2: After 0.8 sec slip moves up and fits center
       setTimeout(() => {
         slip.classList.remove('animate-down');
         slip.classList.add('animate-up');
-      }, 3000);
+      }, 900);
       
       // Step 3: Voice confirmation after slip animation
       setTimeout(() => {
+        // Cancel any ongoing speech
+        speechSynthesis.cancel();
+        
         const msg = new SpeechSynthesisUtterance(
-          "Your vote has been successfully recorded"
+          "आपका वोट सफलतापूर्वक रिकॉर्ड हो गया है"
         );
+        msg.lang = 'hi-IN'; // Set language to Hindi
+        msg.rate = 0.9; // Slightly slower for clarity
+        msg.pitch = 1;
+        msg.volume = 1;
+        
+        msg.onend = function() {
+          // Close popup after voice confirmation finishes
+          modal.classList.remove('show');
+          vvpatScreen.classList.remove('show');
+          // Also stop short-name blink
+          shortName.classList.remove('short-name-blink');
+        };
+        
+        msg.onerror = function(event) {
+          console.error('Speech synthesis error:', event);
+          // Close popup even if voice fails
+          setTimeout(() => {
+            modal.classList.remove('show');
+            vvpatScreen.classList.remove('show');
+            shortName.classList.remove('short-name-blink');
+          }, 1000);
+        };
+        
         speechSynthesis.speak(msg);
-      }, 4000);
+      }, 4100);
       
       // Step 4: Reset lights and buttons after animation (keep modal open)
       setTimeout(() => {
@@ -545,23 +647,20 @@
   <div id="vvpat-modal" class="vvpat-modal">
     <div class="vvpat-screen">
       <div id="vvpat-slip" class="vvpat-slip">
-        <div class="slip-header">
-          <strong>VVPAT SLIP</strong>
-        </div>
-        <div class="slip-field">
+        <div class="slip-serial">
           <strong>Serial No:</strong> <span id="modal-serial" class="serial-number">01</span>
         </div>
-        <div class="slip-field">
-          <strong>Candidate:</strong> <span id="modal-candidate">Candidate Name</span>
+        <div class="slip-candidate-image">
+          <img id="modal-candidate-image" src="public/narendra.png" alt="Candidate" class="w-12 h-12 object-cover rounded">
         </div>
-        <div class="slip-field">
-          <strong>Party:</strong> <span id="modal-party">PARTY</span>
+        <div class="slip-candidate-name">
+          <span id="modal-candidate">Candidate Name</span>
         </div>
         <div class="slip-symbol">
           <div id="modal-symbol" class="slip-symbol-inner">🏏</div>
         </div>
         <div class="slip-footer">
-          <strong>Vote Recorded</strong>
+          <strong>Thanks for Voting</strong>
         </div>
       </div>
     </div>

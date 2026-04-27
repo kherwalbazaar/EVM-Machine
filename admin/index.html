@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EVM Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-72 bg-blue-900 text-white p-6 shadow-xl">
+      <h1 class="text-2xl font-bold mb-8">EVM Admin</h1>
+
+      <nav class="space-y-3">
+        <a href="#dashboard" class="block px-4 py-3 rounded-xl bg-blue-800 hover:bg-blue-700">Dashboard</a>
+        <a href="#candidates" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Candidates</a>
+        <a href="#voters" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Voters</a>
+        <a href="#livevotes" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Live Votes</a>
+        <a href="#results" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Results</a>
+        <a href="#vvpat" class="block px-4 py-3 rounded-xl hover:bg-blue-800">VVPAT</a>
+        <a href="#reports" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Reports</a>
+        <a href="#settings" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Settings</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+
+      <!-- Top Header -->
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
+          <p class="text-gray-500">Manage your EVM Voting System</p>
+        </div>
+        <div class="bg-white px-5 py-3 rounded-2xl shadow">
+          <p class="font-semibold">Election Status: <span class="text-green-600">Active</span></p>
+        </div>
+      </div>
+
+      <!-- Dashboard Cards -->
+      <section id="dashboard" class="mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-white p-6 rounded-2xl shadow">
+            <h3 class="text-gray-500">Total Voters</h3>
+            <p class="text-3xl font-bold mt-2">12,540</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl shadow">
+            <h3 class="text-gray-500">Candidates</h3>
+            <p class="text-3xl font-bold mt-2">10</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl shadow">
+            <h3 class="text-gray-500">Votes Cast</h3>
+            <p class="text-3xl font-bold mt-2">8,940</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl shadow">
+            <h3 class="text-gray-500">Turnout</h3>
+            <p class="text-3xl font-bold mt-2">71%</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Candidates Page -->
+      <section id="candidates" class="mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">Candidate Management</h3>
+            <button class="bg-blue-700 text-white px-5 py-2 rounded-xl">+ Add Candidate</button>
+          </div>
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b">
+                <th class="py-3">Serial</th>
+                <th>Name</th>
+                <th>Party</th>
+                <th>Symbol</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b">
+                <td class="py-3">01</td>
+                <td>Narendra Modi</td>
+                <td>BJP</td>
+                <td>Lotus</td>
+                <td>
+                  <button class="text-blue-600">Edit</button>
+                  <button class="text-red-600 ml-3">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Live Votes -->
+      <section id="livevotes" class="mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow">
+          <h3 class="text-xl font-bold mb-4">Live Vote Monitoring</h3>
+          <p class="text-gray-600">Real-time vote counting and candidate-wise monitoring section.</p>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section id="results" class="mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow">
+          <h3 class="text-xl font-bold mb-4">Election Results</h3>
+          <p class="text-gray-600">Winner declaration, final reports, PDF export and print options.</p>
+        </div>
+      </section>
+
+      <!-- VVPAT -->
+      <section id="vvpat" class="mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow">
+          <h3 class="text-xl font-bold mb-4">VVPAT Verification</h3>
+          <p class="text-gray-600">Slip verification logs and audit report section.</p>
+        </div>
+      </section>
+
+      <!-- Reports -->
+      <section id="reports" class="mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow">
+          <h3 class="text-xl font-bold mb-4">Reports</h3>
+          <p class="text-gray-600">Daily report, final election report, and candidate performance reports.</p>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings">
+        <div class="bg-white p-6 rounded-2xl shadow">
+          <h3 class="text-xl font-bold mb-4">Settings</h3>
+          <p class="text-gray-600">Upload logo, banner, sound settings, and system customization.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIor-joUMHYfgEcdILWlLrucPxHAvxvZc",
+      authDomain: "evm-machine-b0415.firebaseapp.com",
+      projectId: "evm-machine-b0415",
+      storageBucket: "evm-machine-b0415.firebasestorage.app",
+      messagingSenderId: "339785747127",
+      appId: "1:339785747127:web:7e004699f350e433badb32",
+      measurementId: "G-1Z5MXB6GR9"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+      try {
+        // Get total votes
+        const votesSnapshot = await db.collection('votes').get();
+        const totalVotes = votesSnapshot.size;
+
+        // Get candidates count
+        const candidatesSnapshot = await db.collection('candidates').get();
+        const candidatesCount = candidatesSnapshot.size;
+
+        // Get voters count
+        const votersSnapshot = await db.collection('voters').get();
+        const totalVoters = votersSnapshot.size;
+
+        // Calculate turnout percentage
+        const turnout = totalVoters > 0 ? Math.round((totalVotes / totalVoters) * 100) : 0;
+
+        // Update dashboard
+        document.querySelector('#dashboard .grid > div:nth-child(1) p').textContent = totalVoters.toLocaleString();
+        document.querySelector('#dashboard .grid > div:nth-child(2) p').textContent = candidatesCount;
+        document.querySelector('#dashboard .grid > div:nth-child(3) p').textContent = totalVotes.toLocaleString();
+        document.querySelector('#dashboard .grid > div:nth-child(4) p').textContent = turnout + '%';
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+      }
+    }
+
+    // Load candidates
+    async function loadCandidates() {
+      try {
+        const candidatesSnapshot = await db.collection('candidates').get();
+        const candidatesTable = document.querySelector('#candidates tbody');
+        candidatesTable.innerHTML = '';
+
+        candidatesSnapshot.forEach((doc, index) => {
+          const data = doc.data();
+          const row = `
+            <tr class="border-b">
+              <td class="py-3">${String(index + 1).padStart(2, '0')}</td>
+              <td>${data.leader || 'N/A'}</td>
+              <td>${data.name || data.short || 'N/A'}</td>
+              <td>${data.short || 'N/A'}</td>
+              <td>
+                <button class="text-blue-600">Edit</button>
+                <button class="text-red-600 ml-3">Delete</button>
+              </td>
+            </tr>
+          `;
+          candidatesTable.innerHTML += row;
+        });
+      } catch (error) {
+        console.error('Error loading candidates:', error);
+      }
+    }
+
+    // Load live votes
+    async function loadLiveVotes() {
+      try {
+        const votesSnapshot = await db.collection('candidates').get();
+        const liveVotesContainer = document.querySelector('#livevotes');
+        let votesHTML = '<div class="space-y-4">';
+
+        votesSnapshot.forEach((doc) => {
+          const data = doc.data();
+          votesHTML += `
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-semibold">${data.leader || data.name}</p>
+                <p class="text-sm text-gray-600">${data.short || 'N/A'}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-2xl font-bold text-blue-600">${data.votes || 0}</p>
+                <p class="text-sm text-gray-600">votes</p>
+              </div>
+            </div>
+          `;
+        });
+
+        votesHTML += '</div>';
+        liveVotesContainer.querySelector('.bg-white').innerHTML = `
+          <h3 class="text-xl font-bold mb-4">Live Vote Monitoring</h3>
+          ${votesHTML}
+        `;
+      } catch (error) {
+        console.error('Error loading live votes:', error);
+      }
+    }
+
+    // Load results
+    async function loadResults() {
+      try {
+        const votesSnapshot = await db.collection('candidates').get();
+        let maxVotes = 0;
+        let winner = null;
+        let totalVotes = 0;
+
+        votesSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const votes = data.votes || 0;
+          totalVotes += votes;
+
+          if (votes > maxVotes) {
+            maxVotes = votes;
+            winner = data;
+          }
+        });
+
+        const resultsContainer = document.querySelector('#results');
+        const winnerPercentage = totalVotes > 0 ? Math.round((maxVotes / totalVotes) * 100) : 0;
+
+        resultsContainer.querySelector('.bg-white').innerHTML = `
+          <h3 class="text-xl font-bold mb-4">Election Results</h3>
+          ${winner ? `
+            <div class="bg-green-50 border border-green-200 p-6 rounded-lg mb-4">
+              <p class="text-lg font-semibold text-green-800">🏆 Winner</p>
+              <p class="text-2xl font-bold text-green-900">${winner.leader || winner.name}</p>
+              <p class="text-green-700">${winner.short || 'N/A'}</p>
+              <p class="text-3xl font-bold text-green-600 mt-2">${maxVotes} votes (${winnerPercentage}%)</p>
+            </div>
+          ` : '<p class="text-gray-600">No votes recorded yet</p>'}
+          <div class="space-y-2">
+            ${votesSnapshot.docs.map(doc => {
+              const data = doc.data();
+              const votes = data.votes || 0;
+              const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+              return `
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                  <span>${data.leader || data.name} (${data.short || 'N/A'})</span>
+                  <span>${votes} votes (${percentage}%)</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading results:', error);
+      }
+    }
+
+    // Initialize dashboard on load
+    window.onload = function() {
+      loadDashboardStats();
+      loadCandidates();
+      loadLiveVotes();
+      loadResults();
+
+      // Refresh data every 30 seconds
+      setInterval(() => {
+        loadDashboardStats();
+        loadLiveVotes();
+        loadResults();
+      }, 30000);
+    };
+  </script>
+
+</body>
+</html>

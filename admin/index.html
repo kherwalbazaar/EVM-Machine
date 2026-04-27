@@ -93,7 +93,13 @@
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Turnout</h3>
-            <p class="text-3xl font-bold mt-2" id="turnout">Loading...</p>
+            <div class="mt-4 relative w-24 h-24 mx-auto">
+              <svg class="w-24 h-24 transform -rotate-90">
+                <circle cx="48" cy="48" r="40" stroke="#e5e7eb" stroke-width="8" fill="none"/>
+                <circle id="turnout-circle" cx="48" cy="48" r="40" stroke="#3b82f6" stroke-width="8" fill="none" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"/>
+              </svg>
+              <p class="absolute inset-0 flex items-center justify-center text-2xl font-bold" id="turnout">0%</p>
+            </div>
           </div>
         </div>
       </section>
@@ -213,12 +219,20 @@
         document.getElementById('total-candidates').textContent = candidatesCount;
         document.getElementById('total-votes').textContent = totalVotes.toLocaleString();
         document.getElementById('turnout').textContent = turnout + '%';
+
+        // Update circular progress bar
+        const circle = document.getElementById('turnout-circle');
+        const circumference = 251.2; // 2 * π * 40
+        const offset = circumference - (circumference * turnout / 100);
+        circle.style.strokeDashoffset = offset;
       } catch (error) {
         console.error('Error loading dashboard stats:', error);
         document.getElementById('total-voters').textContent = '0';
         document.getElementById('total-candidates').textContent = '0';
         document.getElementById('total-votes').textContent = '0';
         document.getElementById('turnout').textContent = '0%';
+        const circle = document.getElementById('turnout-circle');
+        circle.style.strokeDashoffset = 251.2; // Full offset for 0%
       }
     }
 

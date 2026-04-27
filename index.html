@@ -464,64 +464,10 @@
         </div>
       </div>
 
-      <!-- Candidate List with Buttons -->
-          <div class="grid grid-cols-[70px_70px_1fr_80px_80px_160px] h-14 border-b-2 border-gray-300">
-            <div class="flex items-center justify-center font-bold text-xl border-l-2 border-r border-gray-400 bg-white rounded-tl-lg">1</div>
-            <div class="flex items-center justify-center border-l border-gray-300 bg-white">
-              <img src="https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/narendra.png" alt="Narendra Modi" class="w-10 h-10 object-cover rounded-lg">
-            </div>
-            <div class="flex items-center px-4 font-semibold text-lg bg-white">Narendra Modi</div>
-            <div class="flex items-center justify-center border-l border-gray-300 bg-white text-sm font-medium" id="short-name-1">BJP</div>
-            <div class="flex items-center justify-center border-l border-gray-300 bg-white rounded-tr-lg">
-              <img src="https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/bjp.png" alt="BJP" class="h-12 w-12 object-contain">
-            </div>
-            <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 rounded-t-lg shadow-sm">
-              <div class="red-light" id="red-light-1"></div>
-              <div class="vote-btn cursor-pointer" id="vote-btn-1" onclick="handleVote(1)"></div>
-            </div>
+      <!-- Candidate List Container -->
+          <div id="candidate-list-container">
+            <div class="text-center py-8">Loading candidates...</div>
           </div>
-
-          <!-- Remaining Rows -->
-          <script>
-            const parties = [
-              { name: 'Biju Janata Dal (BJD)', short: 'BJD', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/bjd.png', fullName: 'Biju Janata Dal', leader: 'Naveen Patnaik', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/naveen.png' },
-              { name: 'Indian National Congress (Congress)', short: 'INC', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/Congress.png', fullName: 'Indian National Congress', leader: 'Mallikarjun Kharge', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/khadge.png' },
-              { name: 'Aam Aadmi Party (AAP)', short: 'AAP', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/aap.png', fullName: 'Aam Aadmi Party', leader: 'Arvind Kejriwal', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/kejriwal.png' },
-              { name: 'Communist Party of India (Marxist)', short: 'CPM', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/CPI.png', fullName: 'Communist Party of India (Marxist)', leader: 'M. A. Baby', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/M.%20A.%20Baby.png' },
-              { name: 'Communist Party of India', short: 'CPI', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/CPI.png', fullName: 'Communist Party of India', leader: 'D. Raja', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/d%20raja.png' },
-              { name: 'Jharkhand Mukti Morcha', short: 'JMM', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/JMM.png', fullName: 'Jharkhand Mukti Morcha', leader: 'Hemant Soren', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/hemanta.png' },
-              { name: 'All India Trinamool Congress', short: 'TMC', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/TMC.png', fullName: 'All India Trinamool Congress', leader: 'Mamata Banerjee', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/mamata.png' },
-              { name: 'Kherwal Gana Party (KGP)', short: 'KGP', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/KGP.png', fullName: 'Kherwal Gana Party', leader: 'Balakram Tudu', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/balakram.png' },
-              { name: '', short: '', symbol: '', fullName: '', leader: '', candidateImage: '' }
-            ];
-
-            const bjpParty = { name: 'Bharatiya Janata Party (BJP)', short: 'BJP', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/bjp.png', fullName: 'Bharatiya Janata Party', leader: 'Narendra Modi', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/narendra.png' };
-            
-            for (let i = 2; i <= 10; i++) {
-              const isLast = i === 10;
-              const roundedClass = isLast ? 'rounded-b-lg' : '';
-              const numberRoundedClass = isLast ? 'rounded-bl-lg' : '';
-              const symbolRoundedClass = isLast ? 'rounded-br-lg' : 'rounded-tr-lg';
-              const party = parties[i - 2] || { name: '', short: '', leader: '', candidateImage: '' };
-              document.write(`
-                <div class="grid grid-cols-[70px_70px_1fr_80px_80px_160px] h-14 border-b-2 border-gray-300">
-                  <div class="flex items-center justify-center font-bold text-xl border-l-2 border-r border-gray-400 bg-white ${numberRoundedClass}">${i}</div>
-                  <div class="flex items-center justify-center border-l border-gray-300 bg-white">
-                    ${party.candidateImage ? `<img src="${party.candidateImage}" alt="${party.leader}" class="w-10 h-10 object-cover rounded-lg">` : '<div class="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-xs">IMG</div>'}
-                  </div>
-                  <div class="flex items-center px-4 font-semibold text-lg bg-white">${party.leader || party.name}</div>
-                  <div class="flex items-center justify-center border-l border-gray-300 bg-white text-sm font-medium" id="short-name-${i}">${party.short}</div>
-                  <div class="border-l border-gray-300 bg-white ${symbolRoundedClass} flex items-center justify-center">
-                    ${party.symbol ? `<img src="${party.symbol}" alt="${party.short}" class="h-12 w-12 object-contain">` : ''}
-                  </div>
-                  <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 ${roundedClass} shadow-sm">
-                    <div class="red-light" id="red-light-${i}"></div>
-                    <div class="vote-btn cursor-pointer" id="vote-btn-${i}" onclick="handleVote(${i})"></div>
-                  </div>
-                </div>
-              `)
-            }
-          </script>
 
     </div>
 
@@ -619,7 +565,68 @@
     // Initialize Firestore
     const db = firebase.firestore();
 
+    // Store candidates data globally
+    let candidatesData = [];
+
+    // Load candidates from Firestore
+    async function loadCandidates() {
+      try {
+        const candidatesSnapshot = await db.collection('candidates').orderBy('createdAt').get();
+        candidatesData = [];
+        
+        const container = document.getElementById('candidate-list-container');
+        container.innerHTML = '';
+
+        let index = 1;
+        candidatesSnapshot.forEach((doc) => {
+          const data = doc.data();
+          candidatesData[index] = data;
+          
+          const isLast = index === candidatesSnapshot.size;
+          const roundedClass = isLast ? 'rounded-b-lg' : '';
+          const numberRoundedClass = isLast ? 'rounded-bl-lg' : (index === 1 ? 'rounded-tl-lg' : '');
+          const symbolRoundedClass = isLast ? 'rounded-br-lg' : (index === 1 ? 'rounded-tr-lg' : '');
+          const topRoundedClass = index === 1 ? 'rounded-t-lg' : '';
+
+          const candidateHTML = `
+            <div class="grid grid-cols-[70px_70px_1fr_80px_80px_160px] h-14 border-b-2 border-gray-300">
+              <div class="flex items-center justify-center font-bold text-xl border-l-2 border-r border-gray-400 bg-white ${numberRoundedClass}">${index}</div>
+              <div class="flex items-center justify-center border-l border-gray-300 bg-white">
+                ${data.candidateImage ? `<img src="${data.candidateImage}" alt="${data.leader}" class="w-10 h-10 object-cover rounded-lg">` : '<div class="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-xs">IMG</div>'}
+              </div>
+              <div class="flex items-center px-4 font-semibold text-lg bg-white">${data.leader}</div>
+              <div class="flex items-center justify-center border-l border-gray-300 bg-white text-sm font-medium" id="short-name-${index}">${data.short}</div>
+              <div class="border-l border-gray-300 bg-white ${symbolRoundedClass} flex items-center justify-center">
+                ${data.symbol ? `<img src="${data.symbol}" alt="${data.short}" class="h-12 w-12 object-contain">` : ''}
+              </div>
+              <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 ${topRoundedClass} ${roundedClass} shadow-sm">
+                <div class="red-light" id="red-light-${index}"></div>
+                <div class="vote-btn cursor-pointer" id="vote-btn-${index}" onclick="handleVote(${index})"></div>
+              </div>
+            </div>
+          `;
+          
+          container.innerHTML += candidateHTML;
+          index++;
+        });
+
+        if (candidatesSnapshot.size === 0) {
+          container.innerHTML = '<div class="text-center py-8 text-gray-600">No candidates found. Please add candidates in the Admin panel.</div>';
+        }
+      } catch (error) {
+        console.error('Error loading candidates:', error);
+        document.getElementById('candidate-list-container').innerHTML = '<div class="text-center py-8 text-red-600">Error loading candidates. Please check Firestore security rules.</div>';
+      }
+    }
+
     function handleVote(index) {
+      // Get candidate data from dynamically loaded data
+      const party = candidatesData[index];
+      
+      if (!party) {
+        console.error('Candidate data not found for index:', index);
+        return;
+      }
 
       // Add blinking and clicked classes
       const redLight = document.getElementById(`red-light-${index}`);
@@ -629,25 +636,6 @@
       redLight.classList.add('blink-green');
       voteBtn.classList.add('clicked');
       shortName.classList.add('short-name-blink');
-      
-      // Get party data
-      let party;
-      if (index === 1) {
-        party = { name: 'Bharatiya Janata Party (BJP)', short: 'BJP', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/bjp.png', fullName: 'Bharatiya Janata Party', leader: 'Narendra Modi', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/narendra.png' };
-      } else {
-        const parties = [
-          { name: 'Biju Janata Dal (BJD)', short: 'BJD', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/bjd.png', fullName: 'Biju Janata Dal', leader: 'Naveen Patnaik', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/naveen.png' },
-          { name: 'Indian National Congress (Congress)', short: 'INC', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/Congress.png', fullName: 'Indian National Congress', leader: 'Mallikarjun Kharge', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/khadge.png' },
-          { name: 'Aam Aadmi Party (AAP)', short: 'AAP', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/aap.png', fullName: 'Aam Aadmi Party', leader: 'Arvind Kejriwal', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/kejriwal.png' },
-          { name: 'Communist Party of India (Marxist)', short: 'CPM', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/CPI.png', fullName: 'Communist Party of India (Marxist)', leader: 'M. A. Baby', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/M.%20A.%20Baby.png' },
-          { name: 'Communist Party of India', short: 'CPI', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/CPI.png', fullName: 'Communist Party of India', leader: 'D. Raja', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/d%20raja.png' },
-          { name: 'Jharkhand Mukti Morcha', short: 'JMM', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/JMM.png', fullName: 'Jharkhand Mukti Morcha', leader: 'Hemant Soren', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/hemanta.png' },
-          { name: 'All India Trinamool Congress', short: 'TMC', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/TMC.png', fullName: 'All India Trinamool Congress', leader: 'Mamata Banerjee', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/mamata.png' },
-          { name: 'Kherwal Gana Party (KGP)', short: 'KGP', symbol: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/KGP.png', fullName: 'Kherwal Gana Party', leader: 'Balakram Tudu', candidateImage: 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/balakram.png' },
-          { name: '', short: '', symbol: '', fullName: '', leader: '', candidateImage: '' }
-        ];
-        party = parties[index - 2] || { name: '', short: '', symbol: '', fullName: '', leader: '' };
-      }
       
       // New VVPAT Modal Animation
       const modal = document.getElementById('vvpat-modal');
@@ -717,16 +705,24 @@
       if (party.candidateImage) {
         candidateImageElement.src = party.candidateImage;
         candidateImageElement.alt = party.leader || 'Candidate';
+      } else {
+        candidateImageElement.src = 'https://ik.imagekit.io/kherwalbazaar/EVM%20Machine/narendra.png';
+        candidateImageElement.alt = 'Candidate';
       }
       
       // Update party symbol
-      const modalSymbolElement = document.getElementById('modal-symbol');
+      const modalSymbol = document.getElementById('modal-symbol');
       if (party.symbol && party.symbol.includes('.png')) {
-        modalSymbolElement.innerHTML = `<img src="${party.symbol}" alt="${party.short}" class="w-16 h-16 object-contain">`;
+        modalSymbol.innerHTML = `<img src="${party.symbol}" alt="${party.short}" class="w-16 h-16 object-contain">`;
       } else {
-        modalSymbolElement.textContent = party.symbol || '🏏';
+        modalSymbol.textContent = party.symbol || '🏏';
       }
     }
+
+    // Load candidates on page load
+    window.onload = function() {
+      loadCandidates();
+    };
 
     // Close modal when clicking outside
     document.addEventListener('click', function(event) {

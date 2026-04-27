@@ -233,10 +233,11 @@
       document.getElementById('add-candidate-modal').classList.add('hidden');
       document.getElementById('add-candidate-modal').classList.remove('flex');
       document.getElementById('add-candidate-form').reset();
+      document.querySelector('#add-candidate-modal h3').textContent = 'Add New Candidate';
     }
 
     // Handle add candidate form submission
-    document.getElementById('add-candidate-form').addEventListener('submit', async function(e) {
+    const formSubmitHandler = async function(e) {
       e.preventDefault();
 
       const candidateName = document.getElementById('candidate-name').value;
@@ -266,7 +267,108 @@
         console.error('Error adding candidate:', error);
         alert('Error adding candidate: ' + error.message);
       }
-    });
+    };
+
+    document.getElementById('add-candidate-form').addEventListener('submit', formSubmitHandler);
+    originalFormSubmit = formSubmitHandler;
+
+    // Toggle dropdown menu
+    function toggleDropdown(id) {
+      // Close all other dropdowns
+      document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+        if (dropdown.id !== `dropdown-${id}`) {
+          dropdown.classList.add('hidden');
+        }
+      });
+      
+      // Toggle current dropdown
+      const dropdown = document.getElementById(`dropdown-${id}`);
+      dropdown.classList.toggle('hidden');
+    }
+
+    // Edit candidate
+    function editCandidate(id) {
+      // Close dropdown
+      document.getElementById(`dropdown-${id}`).classList.add('hidden');
+      
+      // Fetch candidate data and populate form
+      db.collection('candidates').doc(id).get()
+        .then((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('candidate-name').value = data.leader || '';
+            document.getElementById('party-name').value = data.name || '';
+            document.getElementById('party-short').value = data.short || '';
+            document.getElementById('candidate-image').value = data.candidateImage || '';
+            document.getElementById('party-logo').value = data.symbol || '';
+            
+            // Change modal title
+            document.querySelector('#add-candidate-modal h3').textContent = 'Edit Candidate';
+            
+            // Change form submit handler to update instead of create
+            const form = document.getElementById('add-candidate-form');
+            form.onsubmit = async function(e) {
+              e.preventDefault();
+              
+              const candidateName = document.getElementById('candidate-name').value;
+              const partyName = document.getElementById('party-name').value;
+              const partyShort = document.getElementById('party-short').value;
+              const candidateImage = document.getElementById('candidate-image').value;
+              const partyLogo = document.getElementById('party-logo').value;
+              
+              try {
+                await db.collection('candidates').doc(id).update({
+                  name: partyName,
+                  short: partyShort,
+                  fullName: partyName,
+                  leader: candidateName,
+                  candidateImage: candidateImage,
+                  symbol: partyLogo
+                });
+                
+                alert('Candidate updated successfully!');
+                closeAddCandidateModal();
+                loadCandidates();
+                loadDashboardStats();
+                
+                // Reset form submit handler back to create
+                form.onsubmit = originalFormSubmit;
+              } catch (error) {
+                console.error('Error updating candidate:', error);
+                alert('Error updating candidate: ' + error.message);
+              }
+            };
+            
+            openAddCandidateModal();
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching candidate:', error);
+          alert('Error fetching candidate data');
+        });
+    }
+
+    // Delete candidate
+    function deleteCandidate(id) {
+      // Close dropdown
+      document.getElementById(`dropdown-${id}`).classList.add('hidden');
+      
+      if (confirm('Are you sure you want to delete this candidate?')) {
+        db.collection('candidates').doc(id).delete()
+          .then(() => {
+            alert('Candidate deleted successfully!');
+            loadCandidates();
+            loadDashboardStats();
+          })
+          .catch((error) => {
+            console.error('Error deleting candidate:', error);
+            alert('Error deleting candidate: ' + error.message);
+          });
+      }
+    }
+
+    // Store original form submit handler
+    let originalFormSubmit = null;
 
     // Load candidates
     async function loadCandidates() {
@@ -283,9 +385,12 @@
               <td>${data.leader || 'N/A'}</td>
               <td>${data.name || data.short || 'N/A'}</td>
               <td>${data.short || 'N/A'}</td>
-              <td>
-                <button class="text-blue-600">Edit</button>
-                <button class="text-red-600 ml-3">Delete</button>
+              <td class="relative">
+                <button class="text-gray-600 hover:text-gray-800 text-xl" onclick="toggleDropdown('${doc.id}')">⋮</button>
+                <div id="dropdown-${doc.id}" class="hidden absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border z-10">
+                  <button class="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-gray-100" onclick="editCandidate('${doc.id}')">Edit</button>
+                  <button class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onclick="deleteCandidate('${doc.id}')">Delete</button>
+                </div>
               </td>
             </tr>
           `;

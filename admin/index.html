@@ -11,6 +11,39 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
+  <!-- Add Candidate Modal -->
+  <div id="add-candidate-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4">
+      <h3 class="text-2xl font-bold mb-6">Add New Candidate</h3>
+      <form id="add-candidate-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold mb-2">Candidate Name</label>
+          <input type="text" id="candidate-name" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter candidate name">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-2">Party Name</label>
+          <input type="text" id="party-name" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter party name">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-2">Party Short Code</label>
+          <input type="text" id="party-short" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., BJP, INC, AAP">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-2">Candidate Image Link</label>
+          <input type="url" id="candidate-image" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter image URL">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-2">Party Logo Link</label>
+          <input type="url" id="party-logo" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter logo URL">
+        </div>
+        <div class="flex gap-4 pt-4">
+          <button type="button" onclick="closeAddCandidateModal()" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-400 transition">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Add Candidate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div class="flex min-h-screen">
 
     <!-- Sidebar -->
@@ -70,7 +103,7 @@
         <div class="bg-white p-6 rounded-2xl shadow">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold">Candidate Management</h3>
-            <button class="bg-blue-700 text-white px-5 py-2 rounded-xl">+ Add Candidate</button>
+            <button class="bg-blue-700 text-white px-5 py-2 rounded-xl" onclick="openAddCandidateModal()">+ Add Candidate</button>
           </div>
           <table class="w-full text-left">
             <thead>
@@ -188,6 +221,52 @@
         document.getElementById('turnout').textContent = 'Error';
       }
     }
+
+    // Open add candidate modal
+    function openAddCandidateModal() {
+      document.getElementById('add-candidate-modal').classList.remove('hidden');
+      document.getElementById('add-candidate-modal').classList.add('flex');
+    }
+
+    // Close add candidate modal
+    function closeAddCandidateModal() {
+      document.getElementById('add-candidate-modal').classList.add('hidden');
+      document.getElementById('add-candidate-modal').classList.remove('flex');
+      document.getElementById('add-candidate-form').reset();
+    }
+
+    // Handle add candidate form submission
+    document.getElementById('add-candidate-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const candidateName = document.getElementById('candidate-name').value;
+      const partyName = document.getElementById('party-name').value;
+      const partyShort = document.getElementById('party-short').value;
+      const candidateImage = document.getElementById('candidate-image').value;
+      const partyLogo = document.getElementById('party-logo').value;
+
+      try {
+        // Save candidate to Firestore
+        await db.collection('candidates').doc(partyShort).set({
+          name: partyName,
+          short: partyShort,
+          fullName: partyName,
+          leader: candidateName,
+          candidateImage: candidateImage,
+          symbol: partyLogo,
+          votes: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('Candidate added successfully!');
+        closeAddCandidateModal();
+        loadCandidates(); // Reload candidates list
+        loadDashboardStats(); // Update dashboard stats
+      } catch (error) {
+        console.error('Error adding candidate:', error);
+        alert('Error adding candidate: ' + error.message);
+      }
+    });
 
     // Load candidates
     async function loadCandidates() {

@@ -2,10 +2,8 @@
   "name": "evm-machine",
   "version": "1.0.0",
   "description": "EVM Machine with VVPAT",
-  "main": "index.html",
   "scripts": {
-    "start": "npx serve .",
-    "build": "echo 'No build needed for static site'"
+    "start": "npx serve ."
   },
   "keywords": ["evm", "vvpat", "voting"],
   "author": "",

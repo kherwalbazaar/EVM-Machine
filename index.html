@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EVM Ballot Unit with Thermal Printer</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -595,6 +598,21 @@
   </div>
 
   <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIor-joUMHYfgEcdILWlLrucPxHAvxvZc",
+      authDomain: "evm-machine-b0415.firebaseapp.com",
+      projectId: "evm-machine-b0415",
+      storageBucket: "evm-machine-b0415.firebasestorage.app",
+      messagingSenderId: "339785747127",
+      appId: "1:339785747127:web:7e004699f350e433badb32",
+      measurementId: "G-1Z5MXB6GR9"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+
     function handleVote(index) {
       // Add blinking and clicked classes
       const redLight = document.getElementById(`red-light-${index}`);

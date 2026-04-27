@@ -443,6 +443,105 @@
       border-radius: 0 0 80px 0;
       z-index: 10;
     }
+
+    /* Mobile Number Verification Popup */
+    .mobile-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .mobile-modal.show {
+      display: flex;
+    }
+
+    .mobile-container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .mobile-container h3 {
+      font-size: 20px;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .mobile-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    .mobile-input:focus {
+      border-color: #3b82f6;
+    }
+
+    .mobile-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .mobile-submit {
+      flex: 1;
+      padding: 12px 24px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .mobile-submit:hover {
+      background: #2563eb;
+    }
+
+    .mobile-cancel {
+      flex: 1;
+      padding: 12px 24px;
+      background: #9ca3af;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .mobile-cancel:hover {
+      background: #6b7280;
+    }
+
+    .mobile-error {
+      color: #ef4444;
+      font-size: 14px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .mobile-info {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -474,7 +573,7 @@
             </div>
             <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 rounded-t-lg shadow-sm">
               <div class="red-light" id="red-light-1"></div>
-              <div class="vote-btn cursor-pointer" id="vote-btn-1" onclick="handleVote(1)"></div>
+              <div class="vote-btn cursor-pointer" id="vote-btn-1" onclick="showMobileModal(1)"></div>
             </div>
           </div>
 
@@ -513,7 +612,7 @@
                   </div>
                   <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 ${roundedClass} shadow-sm">
                     <div class="red-light" id="red-light-${i}"></div>
-                    <div class="vote-btn cursor-pointer" id="vote-btn-${i}" onclick="handleVote(${i})"></div>
+                    <div class="vote-btn cursor-pointer" id="vote-btn-${i}" onclick="showMobileModal(${i})"></div>
                   </div>
                 </div>
               `)
@@ -617,7 +716,101 @@
     // Initialize Firestore
     const db = firebase.firestore();
 
-    function handleVote(index) {
+    // Store current vote index
+    let currentVoteIndex = null;
+
+    // Show mobile verification modal
+    function showMobileModal(index) {
+      currentVoteIndex = index;
+      document.getElementById('mobile-modal').classList.add('show');
+      document.getElementById('mobile-input').value = '';
+      document.getElementById('mobile-error').textContent = '';
+      document.getElementById('mobile-input').focus();
+    }
+
+    // Close mobile verification modal
+    function closeMobileModal() {
+      document.getElementById('mobile-modal').classList.remove('show');
+      currentVoteIndex = null;
+    }
+
+    // Submit mobile number and verify
+    function submitMobileNumber() {
+      const mobileInput = document.getElementById('mobile-input');
+      const mobileError = document.getElementById('mobile-error');
+      const mobileNumber = mobileInput.value.trim();
+
+      // Validate mobile number (10 digits)
+      if (!/^[0-9]{10}$/.test(mobileNumber)) {
+        mobileError.textContent = 'Please enter a valid 10-digit mobile number';
+        return;
+      }
+
+      // Check if mobile number has already voted
+      db.collection('voters').doc(mobileNumber).get()
+        .then((doc) => {
+          if (doc.exists) {
+            mobileError.textContent = 'This mobile number has already voted. One mobile number can only vote once.';
+          } else {
+            // Mobile number is valid, proceed with voting
+            closeMobileModal();
+            handleVote(currentVoteIndex, mobileNumber);
+          }
+        })
+        .catch((error) => {
+          console.error('Error checking mobile number:', error);
+          mobileError.textContent = 'Error verifying mobile number. Please try again.';
+        });
+    }
+
+    // Store vote in Firestore
+    function storeVoteInFirestore(index, party, mobileNumber) {
+      const voteData = {
+        candidateIndex: index,
+        candidateName: party.leader,
+        partyName: party.short,
+        partyFullName: party.fullName,
+        mobileNumber: mobileNumber,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      // Store vote in votes collection
+      db.collection('votes').add(voteData)
+        .then(() => {
+          console.log('Vote stored successfully');
+
+          // Mark mobile number as voted
+          db.collection('voters').doc(mobileNumber).set({
+            voted: true,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          })
+          .then(() => {
+            console.log('Mobile number marked as voted');
+          })
+          .catch((error) => {
+            console.error('Error marking mobile number as voted:', error);
+          });
+
+          // Update vote count for the candidate
+          db.collection('candidates').doc(party.short).set({
+            name: party.fullName,
+            leader: party.leader,
+            votes: firebase.firestore.FieldValue.increment(1),
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true })
+          .then(() => {
+            console.log('Vote count updated');
+          })
+          .catch((error) => {
+            console.error('Error updating vote count:', error);
+          });
+        })
+        .catch((error) => {
+          console.error('Error storing vote:', error);
+        });
+    }
+
+    function handleVote(index, mobileNumber = null) {
       // Add blinking and clicked classes
       const redLight = document.getElementById(`red-light-${index}`);
       const voteBtn = document.getElementById(`vote-btn-${index}`);
@@ -687,6 +880,11 @@
             slip.classList.remove('visible');
             shortName.classList.remove('short-name-blink');
             redLight.classList.remove('blink-green');
+
+            // Store vote in Firestore if mobile number is provided
+            if (mobileNumber) {
+              storeVoteInFirestore(index, party, mobileNumber);
+            }
           };
           
           successAudio.onerror = function() {
@@ -785,6 +983,20 @@
         <div class="slip-footer">
           <strong>Thanks for Voting</strong>
         </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Mobile Number Verification Modal -->
+  <div id="mobile-modal" class="mobile-modal">
+    <div class="mobile-container">
+      <h3>Mobile Number Verification</h3>
+      <p class="mobile-info">Enter your 10-digit mobile number to verify your identity before voting.</p>
+      <div id="mobile-error" class="mobile-error"></div>
+      <input type="tel" id="mobile-input" class="mobile-input" placeholder="Enter 10-digit mobile number" maxlength="10" pattern="[0-9]{10}">
+      <div class="mobile-buttons">
+        <button class="mobile-cancel" onclick="closeMobileModal()">Cancel</button>
+        <button class="mobile-submit" onclick="submitMobileNumber()">Submit</button>
       </div>
     </div>
   </div>

@@ -48,19 +48,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Total Voters</h3>
-            <p class="text-3xl font-bold mt-2">12,540</p>
+            <p class="text-3xl font-bold mt-2" id="total-voters">Loading...</p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Candidates</h3>
-            <p class="text-3xl font-bold mt-2">10</p>
+            <p class="text-3xl font-bold mt-2" id="total-candidates">Loading...</p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Votes Cast</h3>
-            <p class="text-3xl font-bold mt-2">8,940</p>
+            <p class="text-3xl font-bold mt-2" id="total-votes">Loading...</p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Turnout</h3>
-            <p class="text-3xl font-bold mt-2">71%</p>
+            <p class="text-3xl font-bold mt-2" id="turnout">Loading...</p>
           </div>
         </div>
       </section>
@@ -176,12 +176,16 @@
         const turnout = totalVoters > 0 ? Math.round((totalVotes / totalVoters) * 100) : 0;
 
         // Update dashboard
-        document.querySelector('#dashboard .grid > div:nth-child(1) p').textContent = totalVoters.toLocaleString();
-        document.querySelector('#dashboard .grid > div:nth-child(2) p').textContent = candidatesCount;
-        document.querySelector('#dashboard .grid > div:nth-child(3) p').textContent = totalVotes.toLocaleString();
-        document.querySelector('#dashboard .grid > div:nth-child(4) p').textContent = turnout + '%';
+        document.getElementById('total-voters').textContent = totalVoters.toLocaleString();
+        document.getElementById('total-candidates').textContent = candidatesCount;
+        document.getElementById('total-votes').textContent = totalVotes.toLocaleString();
+        document.getElementById('turnout').textContent = turnout + '%';
       } catch (error) {
         console.error('Error loading dashboard stats:', error);
+        document.getElementById('total-voters').textContent = 'Error';
+        document.getElementById('total-candidates').textContent = 'Error';
+        document.getElementById('total-votes').textContent = 'Error';
+        document.getElementById('turnout').textContent = 'Error';
       }
     }
 

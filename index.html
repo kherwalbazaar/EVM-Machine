@@ -443,120 +443,14 @@
       border-radius: 0 0 80px 0;
       z-index: 10;
     }
-
-    /* Mobile Number Verification Popup */
-    .mobile-container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 1000;
-    }
-
-    .mobile-container.show {
-      display: block;
-    }
-
-    .mobile-container h3 {
-      font-size: 20px;
-      font-weight: bold;
-      color: #1f2937;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .mobile-input {
-      width: 100%;
-      padding: 12px 16px;
-      font-size: 16px;
-      border: 2px solid #d1d5db;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      outline: none;
-    }
-
-    .mobile-input:focus {
-      border-color: #3b82f6;
-    }
-
-    .mobile-buttons {
-      display: flex;
-      gap: 12px;
-    }
-
-    .mobile-submit {
-      flex: 1;
-      padding: 12px 24px;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .mobile-submit:hover {
-      background: #2563eb;
-    }
-
-    .mobile-cancel {
-      flex: 1;
-      padding: 12px 24px;
-      background: #9ca3af;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .mobile-cancel:hover {
-      background: #6b7280;
-    }
-
-    .mobile-error {
-      color: #ef4444;
-      font-size: 14px;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .mobile-info {
-      color: #6b7280;
-      font-size: 14px;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
-    /* Hide EVM board initially */
-    .evm-container {
-      display: none;
-    }
-
-    .evm-container.show {
-      display: block;
-    }
   </style>
 </head>
 <body>
 
   <div class="min-h-screen flex flex-col items-center py-10 px-4">
 
-    <!-- EVM Machine Container -->
-    <div class="evm-container">
-      <!-- EVM Machine -->
-      <div class="relative evm-shell w-full max-w-5xl p-6">
+    <!-- EVM Machine -->
+    <div class="relative evm-shell w-full max-w-5xl p-6">
 
       <!-- Header -->
       <div class="bg-gray-200 rounded-2xl px-6 py-4 flex justify-between items-center mb-6 border border-gray-400">
@@ -626,7 +520,6 @@
             }
           </script>
 
-    </div>
     </div>
 
     <!-- Printer -->
@@ -723,117 +616,7 @@
     // Initialize Firestore
     const db = firebase.firestore();
 
-    // Store current vote index and verified mobile number
-    let currentVoteIndex = null;
-    let verifiedMobileNumber = null;
-
-    // Show mobile verification modal
-    function showMobileModal(index) {
-      currentVoteIndex = index;
-      document.getElementById('mobile-container').classList.add('show');
-      document.getElementById('mobile-input').value = '';
-      document.getElementById('mobile-error').textContent = '';
-      document.getElementById('mobile-input').focus();
-    }
-
-    // Close mobile verification modal
-    function closeMobileModal() {
-      document.getElementById('mobile-container').classList.remove('show');
-      currentVoteIndex = null;
-    }
-
-    // Submit mobile number and verify
-    function submitMobileNumber() {
-      const mobileInput = document.getElementById('mobile-input');
-      const mobileError = document.getElementById('mobile-error');
-      const mobileNumber = mobileInput.value.trim();
-
-      // Validate mobile number (10 digits)
-      if (!/^[0-9]{10}$/.test(mobileNumber)) {
-        mobileError.textContent = 'Please enter a valid 10-digit mobile number';
-        return;
-      }
-
-      // Check if mobile number has already voted
-      db.collection('voters').doc(mobileNumber).get()
-        .then((doc) => {
-          if (doc.exists) {
-            mobileError.textContent = 'This mobile number has already voted. One mobile number can only vote once.';
-          } else {
-            // Mobile number is valid, store it and show EVM board
-            verifiedMobileNumber = mobileNumber;
-            closeMobileModal();
-            document.getElementById('evm-container').classList.add('show');
-
-            // If voting from button click, proceed with vote
-            if (currentVoteIndex) {
-              handleVote(currentVoteIndex, mobileNumber);
-            }
-          }
-        })
-        .catch((error) => {
-          console.error('Error checking mobile number:', error);
-          mobileError.textContent = 'Error verifying mobile number. Please try again.';
-        });
-    }
-
-    // Show mobile popup on page load
-    window.onload = function() {
-      showMobileModal(null);
-    };
-
-    // Store vote in Firestore
-    function storeVoteInFirestore(index, party, mobileNumber) {
-      const voteData = {
-        candidateIndex: index,
-        candidateName: party.leader,
-        partyName: party.short,
-        partyFullName: party.fullName,
-        mobileNumber: mobileNumber,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      // Store vote in votes collection
-      db.collection('votes').add(voteData)
-        .then(() => {
-          console.log('Vote stored successfully');
-
-          // Mark mobile number as voted
-          db.collection('voters').doc(mobileNumber).set({
-            voted: true,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          })
-          .then(() => {
-            console.log('Mobile number marked as voted');
-          })
-          .catch((error) => {
-            console.error('Error marking mobile number as voted:', error);
-          });
-
-          // Update vote count for the candidate
-          db.collection('candidates').doc(party.short).set({
-            name: party.fullName,
-            leader: party.leader,
-            votes: firebase.firestore.FieldValue.increment(1),
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true })
-          .then(() => {
-            console.log('Vote count updated');
-          })
-          .catch((error) => {
-            console.error('Error updating vote count:', error);
-          });
-        })
-        .catch((error) => {
-          console.error('Error storing vote:', error);
-        });
-    }
-
-    function handleVote(index, mobileNumber = null) {
-      // Use verified mobile number if available
-      if (!mobileNumber && verifiedMobileNumber) {
-        mobileNumber = verifiedMobileNumber;
-      }
+    function handleVote(index) {
 
       // Add blinking and clicked classes
       const redLight = document.getElementById(`red-light-${index}`);
@@ -904,11 +687,6 @@
             slip.classList.remove('visible');
             shortName.classList.remove('short-name-blink');
             redLight.classList.remove('blink-green');
-
-            // Store vote in Firestore if mobile number is provided
-            if (mobileNumber) {
-              storeVoteInFirestore(index, party, mobileNumber);
-            }
           };
           
           successAudio.onerror = function() {
@@ -1008,18 +786,6 @@
           <strong>Thanks for Voting</strong>
         </div>
       </div>
-    </div>
-  </div>
-
-<!-- Mobile Number Verification Modal -->
-  <div id="mobile-container" class="mobile-container">
-    <h3>Mobile Number Verification</h3>
-    <p class="mobile-info">Enter your 10-digit mobile number to verify your identity before voting.</p>
-    <div id="mobile-error" class="mobile-error"></div>
-    <input type="tel" id="mobile-input" class="mobile-input" placeholder="Enter 10-digit mobile number" maxlength="10" pattern="[0-9]{10}">
-    <div class="mobile-buttons">
-      <button class="mobile-cancel" onclick="closeMobileModal()">Cancel</button>
-      <button class="mobile-submit" onclick="submitMobileNumber()">Submit</button>
     </div>
   </div>
 

@@ -542,14 +542,25 @@
       margin-bottom: 16px;
       text-align: center;
     }
+
+    /* Hide EVM board initially */
+    .evm-container {
+      display: none;
+    }
+
+    .evm-container.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
 
   <div class="min-h-screen flex flex-col items-center py-10 px-4">
 
-    <!-- EVM Machine -->
-    <div class="relative evm-shell w-full max-w-5xl p-6">
+    <!-- EVM Machine Container -->
+    <div class="evm-container">
+      <!-- EVM Machine -->
+      <div class="relative evm-shell w-full max-w-5xl p-6">
 
       <!-- Header -->
       <div class="bg-gray-200 rounded-2xl px-6 py-4 flex justify-between items-center mb-6 border border-gray-400">
@@ -573,7 +584,7 @@
             </div>
             <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 rounded-t-lg shadow-sm">
               <div class="red-light" id="red-light-1"></div>
-              <div class="vote-btn cursor-pointer" id="vote-btn-1" onclick="showMobileModal(1)"></div>
+              <div class="vote-btn cursor-pointer" id="vote-btn-1" onclick="handleVote(1)"></div>
             </div>
           </div>
 
@@ -612,14 +623,14 @@
                   </div>
                   <div class="flex items-center justify-center gap-6 px-3 border-t-2 border-l-2 border-r border-gray-400 bg-gray-200 ${roundedClass} shadow-sm">
                     <div class="red-light" id="red-light-${i}"></div>
-                    <div class="vote-btn cursor-pointer" id="vote-btn-${i}" onclick="showMobileModal(${i})"></div>
+                    <div class="vote-btn cursor-pointer" id="vote-btn-${i}" onclick="handleVote(${i})"></div>
                   </div>
                 </div>
               `)
             }
           </script>
 
-      
+    </div>
     </div>
 
     <!-- Printer -->
@@ -716,8 +727,9 @@
     // Initialize Firestore
     const db = firebase.firestore();
 
-    // Store current vote index
+    // Store current vote index and verified mobile number
     let currentVoteIndex = null;
+    let verifiedMobileNumber = null;
 
     // Show mobile verification modal
     function showMobileModal(index) {
@@ -752,9 +764,15 @@
           if (doc.exists) {
             mobileError.textContent = 'This mobile number has already voted. One mobile number can only vote once.';
           } else {
-            // Mobile number is valid, proceed with voting
+            // Mobile number is valid, store it and show EVM board
+            verifiedMobileNumber = mobileNumber;
             closeMobileModal();
-            handleVote(currentVoteIndex, mobileNumber);
+            document.getElementById('evm-container').classList.add('show');
+
+            // If voting from button click, proceed with vote
+            if (currentVoteIndex) {
+              handleVote(currentVoteIndex, mobileNumber);
+            }
           }
         })
         .catch((error) => {
@@ -762,6 +780,11 @@
           mobileError.textContent = 'Error verifying mobile number. Please try again.';
         });
     }
+
+    // Show mobile popup on page load
+    window.onload = function() {
+      showMobileModal(null);
+    };
 
     // Store vote in Firestore
     function storeVoteInFirestore(index, party, mobileNumber) {
@@ -811,6 +834,11 @@
     }
 
     function handleVote(index, mobileNumber = null) {
+      // Use verified mobile number if available
+      if (!mobileNumber && verifiedMobileNumber) {
+        mobileNumber = verifiedMobileNumber;
+      }
+
       // Add blinking and clicked classes
       const redLight = document.getElementById(`red-light-${index}`);
       const voteBtn = document.getElementById(`vote-btn-${index}`);

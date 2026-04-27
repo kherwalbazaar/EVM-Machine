@@ -189,20 +189,26 @@
     // Load dashboard statistics
     async function loadDashboardStats() {
       try {
+        console.log('Starting to load dashboard stats...');
+        
         // Get total votes
         const votesSnapshot = await db.collection('votes').get();
         const totalVotes = votesSnapshot.size;
+        console.log('Total votes:', totalVotes);
 
         // Get candidates count
         const candidatesSnapshot = await db.collection('candidates').get();
         const candidatesCount = candidatesSnapshot.size;
+        console.log('Total candidates:', candidatesCount);
 
         // Get voters count
         const votersSnapshot = await db.collection('voters').get();
         const totalVoters = votersSnapshot.size;
+        console.log('Total voters:', totalVoters);
 
         // Calculate turnout percentage
         const turnout = totalVoters > 0 ? Math.round((totalVotes / totalVoters) * 100) : 0;
+        console.log('Turnout percentage:', turnout);
 
         // Update dashboard
         document.getElementById('total-voters').textContent = totalVoters.toLocaleString();
@@ -215,14 +221,21 @@
         const circumference = 251.2; // 2 * π * 40
         const offset = circumference - (circumference * turnout / 100);
         circle.style.strokeDashoffset = offset;
+        
+        console.log('Dashboard stats loaded successfully');
       } catch (error) {
         console.error('Error loading dashboard stats:', error);
-        document.getElementById('total-voters').textContent = '0';
-        document.getElementById('total-candidates').textContent = '0';
-        document.getElementById('total-votes').textContent = '0';
-        document.getElementById('turnout').textContent = '0%';
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        document.getElementById('total-voters').textContent = 'Error';
+        document.getElementById('total-candidates').textContent = 'Error';
+        document.getElementById('total-votes').textContent = 'Error';
+        document.getElementById('turnout').textContent = 'Error';
         const circle = document.getElementById('turnout-circle');
         circle.style.strokeDashoffset = 251.2; // Full offset for 0%
+        
+        // Show error message to user
+        alert('Error loading data: ' + error.message + '\n\nPlease check Firestore security rules in Firebase Console.');
       }
     }
 

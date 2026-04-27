@@ -9,6 +9,128 @@
     body {
       font-family: Arial, sans-serif;
       background: #f3f4f6;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      .min-h-screen {
+        padding: 0 !important;
+      }
+
+      .evm-shell {
+        padding: 10px !important;
+        border-width: 2px !important;
+        border-radius: 12px !important;
+      }
+
+      .bg-gray-200 {
+        padding: 12px !important;
+        border-radius: 12px !important;
+      }
+
+      .bg-gray-200 .text-3xl {
+        font-size: 1.25rem !important;
+      }
+
+      .bg-gray-200 .text-2xl {
+        font-size: 1rem !important;
+      }
+
+      /* Responsive grid for mobile */
+      .grid {
+        grid-template-columns: 40px 40px 1fr 50px 50px 80px !important;
+        height: auto !important;
+        min-height: 50px !important;
+      }
+
+      .grid > div {
+        font-size: 0.75rem !important;
+        padding: 4px !important;
+      }
+
+      .grid .font-bold {
+        font-size: 0.875rem !important;
+      }
+
+      .grid .font-semibold {
+        font-size: 0.875rem !important;
+      }
+
+      .grid .text-lg {
+        font-size: 0.875rem !important;
+      }
+
+      .grid .text-sm {
+        font-size: 0.625rem !important;
+      }
+
+      /* Responsive images */
+      .grid img {
+        width: 32px !important;
+        height: 32px !important;
+      }
+
+      .grid .h-12 {
+        height: 32px !important;
+        width: 32px !important;
+      }
+
+      .grid .w-10 {
+        width: 32px !important;
+        height: 32px !important;
+      }
+
+      /* Responsive buttons and lights */
+      .vote-btn {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      .red-light {
+        width: 12px !important;
+        height: 12px !important;
+      }
+
+      .green-light {
+        width: 12px !important;
+        height: 12px !important;
+      }
+
+      /* VVPAT responsive */
+      .vvpat-screen {
+        width: 100% !important;
+        height: auto !important;
+        padding: 20px !important;
+      }
+
+      .vvpat-slip {
+        width: 140px !important;
+        font-size: 9px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 35px 35px 1fr 45px 45px 70px !important;
+        min-height: 45px !important;
+      }
+
+      .grid > div {
+        font-size: 0.625rem !important;
+        padding: 2px !important;
+      }
+
+      .grid img {
+        width: 28px !important;
+        height: 28px !important;
+      }
+
+      .vote-btn {
+        width: 35px !important;
+        height: 35px !important;
+      }
     }
 
     .evm-shell {

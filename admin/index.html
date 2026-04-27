@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans m-0">
 
   <!-- Add Candidate Modal -->
   <div id="add-candidate-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
@@ -44,52 +44,80 @@
     </div>
   </div>
 
-  <div class="flex min-h-screen">
+  <main>
 
-    <!-- Sidebar -->
-    <aside class="w-72 bg-blue-900 text-white p-6 shadow-xl">
-      <h1 class="text-2xl font-bold mb-8">EVM Admin</h1>
-
-      <nav class="space-y-3">
-        <a href="#dashboard" class="block px-4 py-3 rounded-xl bg-blue-800 hover:bg-blue-700">Dashboard</a>
-        <a href="#candidates" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Candidates</a>
-        <a href="#voters" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Voters</a>
-        <a href="#livevotes" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Live Votes</a>
-        <a href="#results" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Results</a>
-        <a href="#vvpat" class="block px-4 py-3 rounded-xl hover:bg-blue-800">VVPAT</a>
-        <a href="#reports" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Reports</a>
-        <a href="#settings" class="block px-4 py-3 rounded-xl hover:bg-blue-800">Settings</a>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 p-8">
-
-      <!-- Top Header -->
-      <div class="flex justify-between items-center mb-8">
-        <div>
-          <h2 class="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
-          <p class="text-gray-500">Manage your EVM Voting System</p>
+      <!-- Header Section -->
+      <div class="bg-white shadow-lg pt-8 pb-6 mb-8 -mx-8 -mt-8 px-8">
+        <!-- Top Header -->
+        <div class="flex justify-between items-center mb-6 mt-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center ml-4">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <div class="text-center">
+              <h2 class="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
+              <p class="text-gray-500">Manage your EVM Voting System</p>
+            </div>
+          </div>
+          <div class="bg-gray-100 px-5 py-3 rounded-2xl">
+            <p class="font-semibold">Election Status: <span class="text-green-600">Active</span></p>
+          </div>
         </div>
-        <div class="bg-white px-5 py-3 rounded-2xl shadow">
-          <p class="font-semibold">Election Status: <span class="text-green-600">Active</span></p>
+
+        <!-- Navigation Cards -->
+        <div class="flex flex-wrap gap-3 justify-center">
+          <a href="#dashboard" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow">Dashboard</a>
+          <a href="#candidates" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">Candidates</a>
+          <a href="#voters" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">Voters</a>
+          <a href="#livevotes" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">Live Votes</a>
+          <a href="#results" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">Results</a>
+          <a href="#vvpat" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">VVPAT</a>
+          <a href="#reports" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">Reports</a>
+          <a href="#settings" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow">Settings</a>
+          <a href="../" class="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition shadow">Back to Voting</a>
         </div>
       </div>
 
       <!-- Dashboard Cards -->
-      <section id="dashboard" class="mb-10">
+      <section id="dashboard" class="mb-10 px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Total Voters</h3>
-            <p class="text-3xl font-bold mt-2" id="total-voters">Loading...</p>
+            <div class="mt-2">
+              <div id="total-voters-loading" class="relative w-16 h-16 mx-auto">
+                <svg class="w-16 h-16 transform -rotate-90">
+                  <circle cx="32" cy="32" r="28" stroke="#e5e7eb" stroke-width="4" fill="none"></circle>
+                  <circle cx="32" cy="32" r="28" stroke="#3b82f6" stroke-width="4" fill="none" stroke-dasharray="175.84" stroke-dashoffset="175.84" stroke-linecap="round" class="animate-spin"></circle>
+                </svg>
+              </div>
+              <p class="text-3xl font-bold text-center hidden" id="total-voters">Loading...</p>
+            </div>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Candidates</h3>
-            <p class="text-3xl font-bold mt-2" id="total-candidates">Loading...</p>
+            <div class="mt-2">
+              <div id="total-candidates-loading" class="relative w-16 h-16 mx-auto">
+                <svg class="w-16 h-16 transform -rotate-90">
+                  <circle cx="32" cy="32" r="28" stroke="#e5e7eb" stroke-width="4" fill="none"></circle>
+                  <circle cx="32" cy="32" r="28" stroke="#3b82f6" stroke-width="4" fill="none" stroke-dasharray="175.84" stroke-dashoffset="175.84" stroke-linecap="round" class="animate-spin"></circle>
+                </svg>
+              </div>
+              <p class="text-3xl font-bold text-center hidden" id="total-candidates">Loading...</p>
+            </div>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Votes Cast</h3>
-            <p class="text-3xl font-bold mt-2" id="total-votes">Loading...</p>
+            <div class="mt-2">
+              <div id="total-votes-loading" class="relative w-16 h-16 mx-auto">
+                <svg class="w-16 h-16 transform -rotate-90">
+                  <circle cx="32" cy="32" r="28" stroke="#e5e7eb" stroke-width="4" fill="none"></circle>
+                  <circle cx="32" cy="32" r="28" stroke="#3b82f6" stroke-width="4" fill="none" stroke-dasharray="175.84" stroke-dashoffset="175.84" stroke-linecap="round" class="animate-spin"></circle>
+                </svg>
+              </div>
+              <p class="text-3xl font-bold text-center hidden" id="total-votes">Loading...</p>
+            </div>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow">
             <h3 class="text-gray-500">Turnout</h3>
@@ -105,7 +133,7 @@
       </section>
 
       <!-- Candidates Page -->
-      <section id="candidates" class="mb-10">
+      <section id="candidates" class="mb-10 px-8">
         <div class="bg-white p-6 rounded-2xl shadow">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold">Candidate Management</h3>
@@ -128,7 +156,7 @@
       </section>
 
       <!-- Live Votes -->
-      <section id="livevotes" class="mb-10">
+      <section id="livevotes" class="mb-10 px-8">
         <div class="bg-white p-6 rounded-2xl shadow">
           <h3 class="text-xl font-bold mb-4">Live Vote Monitoring</h3>
           <p class="text-gray-600">Real-time vote counting and candidate-wise monitoring section.</p>
@@ -136,7 +164,7 @@
       </section>
 
       <!-- Results -->
-      <section id="results" class="mb-10">
+      <section id="results" class="mb-10 px-8">
         <div class="bg-white p-6 rounded-2xl shadow">
           <h3 class="text-xl font-bold mb-4">Election Results</h3>
           <p class="text-gray-600">Winner declaration, final reports, PDF export and print options.</p>
@@ -144,7 +172,7 @@
       </section>
 
       <!-- VVPAT -->
-      <section id="vvpat" class="mb-10">
+      <section id="vvpat" class="mb-10 px-8">
         <div class="bg-white p-6 rounded-2xl shadow">
           <h3 class="text-xl font-bold mb-4">VVPAT Verification</h3>
           <p class="text-gray-600">Slip verification logs and audit report section.</p>
@@ -152,7 +180,7 @@
       </section>
 
       <!-- Reports -->
-      <section id="reports" class="mb-10">
+      <section id="reports" class="mb-10 px-8">
         <div class="bg-white p-6 rounded-2xl shadow">
           <h3 class="text-xl font-bold mb-4">Reports</h3>
           <p class="text-gray-600">Daily report, final election report, and candidate performance reports.</p>
@@ -160,7 +188,7 @@
       </section>
 
       <!-- Settings -->
-      <section id="settings">
+      <section id="settings" class="px-8">
         <div class="bg-white p-6 rounded-2xl shadow">
           <h3 class="text-xl font-bold mb-4">Settings</h3>
           <p class="text-gray-600">Upload logo, banner, sound settings, and system customization.</p>
@@ -212,8 +240,14 @@
 
         // Update dashboard
         document.getElementById('total-voters').textContent = totalVoters.toLocaleString();
+        document.getElementById('total-voters-loading').classList.add('hidden');
+        document.getElementById('total-voters').classList.remove('hidden');
         document.getElementById('total-candidates').textContent = candidatesCount;
+        document.getElementById('total-candidates-loading').classList.add('hidden');
+        document.getElementById('total-candidates').classList.remove('hidden');
         document.getElementById('total-votes').textContent = totalVotes.toLocaleString();
+        document.getElementById('total-votes-loading').classList.add('hidden');
+        document.getElementById('total-votes').classList.remove('hidden');
         document.getElementById('turnout').textContent = turnout + '%';
 
         // Update circular progress bar

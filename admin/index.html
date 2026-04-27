@@ -121,17 +121,7 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody>
-              <tr class="border-b">
-                <td class="py-3">01</td>
-                <td>Narendra Modi</td>
-                <td>BJP</td>
-                <td>Lotus</td>
-                <td>
-                  <button class="text-blue-600">Edit</button>
-                  <button class="text-red-600 ml-3">Delete</button>
-                </td>
-              </tr>
+            <tbody id="candidates-table-body">
             </tbody>
           </table>
         </div>
@@ -388,7 +378,7 @@
     async function loadCandidates() {
       try {
         const candidatesSnapshot = await db.collection('candidates').get();
-        const candidatesTable = document.querySelector('#candidates tbody');
+        const candidatesTable = document.getElementById('candidates-table-body');
         candidatesTable.innerHTML = '';
 
         candidatesSnapshot.forEach((doc, index) => {
@@ -410,8 +400,14 @@
           `;
           candidatesTable.innerHTML += row;
         });
+
+        if (candidatesSnapshot.size === 0) {
+          candidatesTable.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-gray-600">No candidates found. Click "Add Candidate" to add candidates.</td></tr>';
+        }
       } catch (error) {
         console.error('Error loading candidates:', error);
+        const candidatesTable = document.getElementById('candidates-table-body');
+        candidatesTable.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-red-600">Error loading candidates. Please check Firestore security rules.</td></tr>';
       }
     }
 

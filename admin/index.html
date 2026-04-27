@@ -215,10 +215,10 @@
         document.getElementById('turnout').textContent = turnout + '%';
       } catch (error) {
         console.error('Error loading dashboard stats:', error);
-        document.getElementById('total-voters').textContent = 'Error';
-        document.getElementById('total-candidates').textContent = 'Error';
-        document.getElementById('total-votes').textContent = 'Error';
-        document.getElementById('turnout').textContent = 'Error';
+        document.getElementById('total-voters').textContent = '0';
+        document.getElementById('total-candidates').textContent = '0';
+        document.getElementById('total-votes').textContent = '0';
+        document.getElementById('turnout').textContent = '0%';
       }
     }
 

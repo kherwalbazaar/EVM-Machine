@@ -168,13 +168,19 @@
       background: white;
       padding: 12px 10px;
       position: absolute;
-      top: 110px;
-      transform: translateY(0); /* start from stop position */
-      opacity: 1;
+      top: -200px; /* start completely off-screen above */
+      transform: translateY(0);
+      opacity: 0; /* start hidden */
+      visibility: hidden; /* ensure completely hidden */
       font-family: 'Courier New', monospace;
       font-size: 10px;
       border: 1px solid #ccc;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .vvpat-slip.visible {
+      opacity: 1;
+      visibility: visible;
     }
 
     /* First: move downward */
@@ -194,14 +200,14 @@
         filter: blur(0px);
       }
 
-      50% {
-        opacity: 0.3; /* slightly show at 50% */
-        filter: blur(2px);
+      20% {
+        opacity: 0.2; /* start showing */
+        filter: blur(4px);
       }
 
       100% {
         transform: translateY(140px); /* move downward */
-        opacity: 0.5; /* still slightly blurry */
+        opacity: 0.6; /* blurry */
         filter: blur(3px);
       }
     }
@@ -209,11 +215,11 @@
     @keyframes printUp {
       0% {
         transform: translateY(140px); /* start from down position */
-        opacity: 0.5; /* slightly blurry */
+        opacity: 0.6; /* blurry */
         filter: blur(3px);
       }
 
-      50% {
+      30% {
         opacity: 0.8; /* becoming clearer */
         filter: blur(1px);
       }
@@ -477,11 +483,6 @@
       voteBtn.classList.add('clicked');
       shortName.classList.add('short-name-blink');
       
-      // Stop blinking after 1 second
-      setTimeout(() => {
-        redLight.classList.remove('blink-green');
-      }, 1000);
-      
       // Get party data
       let party;
       if (index === 1) {
@@ -506,26 +507,59 @@
       const slip = document.getElementById('vvpat-slip');
       const vvpatScreen = document.querySelector('.vvpat-screen');
       
-      // Play beep audio file from public folder
+      // Step 1: Play beep sound immediately after click
       const beepAudio = new Audio('public/dragon-studio-censor-beep-1-372459.mp3');
-      
-      // Show popup only after audio completely finishes
-      beepAudio.onended = function() {
-        // Wait for blink to stop (1 second) plus small delay
-        setTimeout(() => {
-          modal.classList.add('show');
-          vvpatScreen.classList.add('show');
-        }, 100);
-      };
-      
       beepAudio.play().catch(error => {
         console.error('Error playing beep audio:', error);
-        // If audio fails, show popup after 1 second as fallback
-        setTimeout(() => {
-          modal.classList.add('show');
-          vvpatScreen.classList.add('show');
-        }, 1000);
       });
+      
+      // Step 2: Show popup after beep finishes
+      beepAudio.onended = function() {
+        modal.classList.add('show');
+        vvpatScreen.classList.add('show');
+        
+        // Step 3: Start slip animation - slip becomes visible when animation starts
+        setTimeout(() => {
+          slip.style.top = '110px'; // Move to correct position
+          slip.classList.add('visible');
+          slip.classList.remove('animate-up');
+          slip.classList.add('animate-down');
+        }, 200);
+        
+        // Step 4: After 0.8 sec slip moves up
+        setTimeout(() => {
+          slip.classList.remove('animate-down');
+          slip.classList.add('animate-up');
+        }, 1000);
+        
+        // Step 5: Play success sound after slip animation stops (3.8s total)
+        setTimeout(() => {
+          const successAudio = new Audio('public/dragon-studio-censor-beep-1-372459.mp3');
+          
+          successAudio.onended = function() {
+            // Step 6: Close popup after success sound finishes
+            modal.classList.remove('show');
+            vvpatScreen.classList.remove('show');
+            slip.classList.remove('visible');
+            shortName.classList.remove('short-name-blink');
+            redLight.classList.remove('blink-green');
+          };
+          
+          successAudio.onerror = function() {
+            console.error('Error playing success audio:', error);
+            // Close popup even if audio fails
+            modal.classList.remove('show');
+            vvpatScreen.classList.remove('show');
+            slip.classList.remove('visible');
+            shortName.classList.remove('short-name-blink');
+            redLight.classList.remove('blink-green');
+          };
+          
+          successAudio.play().catch(error => {
+            console.error('Error playing success audio:', error);
+          });
+        }, 4000);
+      };
       
       // Update modal content
       document.getElementById('modal-serial').textContent = String(index).padStart(2, '0');
@@ -545,61 +579,6 @@
       } else {
         modalSymbolElement.textContent = party.symbol || '🏏';
       }
-      
-            
-      // Step 1: Slip scroll down (start after popup appears)
-      setTimeout(() => {
-        slip.classList.remove('animate-up');
-        slip.classList.add('animate-down');
-      }, 100);
-      
-      // Step 2: After 0.8 sec slip moves up and fits center
-      setTimeout(() => {
-        slip.classList.remove('animate-down');
-        slip.classList.add('animate-up');
-      }, 900);
-      
-      // Step 3: Voice confirmation after slip animation
-      setTimeout(() => {
-        // Cancel any ongoing speech
-        speechSynthesis.cancel();
-        
-        const msg = new SpeechSynthesisUtterance(
-          "आपका वोट सफलतापूर्वक रिकॉर्ड हो गया है"
-        );
-        msg.lang = 'hi-IN'; // Set language to Hindi
-        msg.rate = 0.9; // Slightly slower for clarity
-        msg.pitch = 1;
-        msg.volume = 1;
-        
-        msg.onend = function() {
-          // Close popup after voice confirmation finishes
-          modal.classList.remove('show');
-          vvpatScreen.classList.remove('show');
-          // Also stop short-name blink
-          shortName.classList.remove('short-name-blink');
-        };
-        
-        msg.onerror = function(event) {
-          console.error('Speech synthesis error:', event);
-          // Close popup even if voice fails
-          setTimeout(() => {
-            modal.classList.remove('show');
-            vvpatScreen.classList.remove('show');
-            shortName.classList.remove('short-name-blink');
-          }, 1000);
-        };
-        
-        speechSynthesis.speak(msg);
-      }, 4100);
-      
-      // Step 4: Reset lights and buttons after animation (keep modal open)
-      setTimeout(() => {
-        slip.classList.remove('animate-up');
-        redLight.classList.remove('blink-green');
-        voteBtn.classList.remove('clicked');
-        shortName.classList.remove('short-name-blink');
-      }, 7000);
     }
 
     // Close modal when clicking outside

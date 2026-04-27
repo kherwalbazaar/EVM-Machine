@@ -5,7 +5,14 @@
   "scripts": {
     "start": "npx serve ."
   },
-  "keywords": ["evm", "vvpat", "voting"],
+  "keywords": [
+    "evm",
+    "vvpat",
+    "voting"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^12.12.1"
+  }
 }
